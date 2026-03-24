@@ -5,6 +5,8 @@ import { ThemeProvider } from '@components/providers/theme-provider';
 import { Layout } from '@components/layout/Layout';
 import { MarketsPage } from '@pages/MarketsPage';
 import { MarketDetailPage } from '@pages/MarketDetailPage';
+import { EarnPage } from '@pages/EarnPage';
+import { BorrowPage } from '@pages/BorrowPage';
 import { PositionsPage } from '@pages/PositionsPage';
 import { LiquidationsPage } from '@pages/LiquidationsPage';
 import { HistoryPage } from '@pages/HistoryPage';
@@ -25,6 +27,8 @@ function App() {
               <Route path="/" element={<Navigate to="/markets" replace />} />
               <Route path="/markets" element={<MarketsPage />} />
               <Route path="/markets/:asset" element={<MarketDetailPage />} />
+              <Route path="/earn" element={<EarnPage />} />
+              <Route path="/borrow" element={<BorrowPage />} />
               <Route path="/positions" element={<PositionsPage />} />
               <Route path="/liquidations" element={<LiquidationsPage />} />
               <Route path="/history" element={<HistoryPage />} />
