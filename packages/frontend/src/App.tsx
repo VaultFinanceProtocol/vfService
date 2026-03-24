@@ -1,0 +1,38 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { SWRConfig } from 'swr';
+import { Toaster } from 'sonner';
+import { Layout } from '@components/layout/Layout';
+import { DashboardPage } from '@pages/DashboardPage';
+import { MarketsPage } from '@pages/MarketsPage';
+import { MarketDetailPage } from '@pages/MarketDetailPage';
+import { PositionsPage } from '@pages/PositionsPage';
+import { LiquidationsPage } from '@pages/LiquidationsPage';
+import { HistoryPage } from '@pages/HistoryPage';
+
+const swrConfig = {
+  refreshInterval: 30000,
+  revalidateOnFocus: true,
+  errorRetryCount: 3,
+};
+
+function App() {
+  return (
+    <SWRConfig value={swrConfig}>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/markets" element={<MarketsPage />} />
+            <Route path="/markets/:asset" element={<MarketDetailPage />} />
+            <Route path="/positions" element={<PositionsPage />} />
+            <Route path="/liquidations" element={<LiquidationsPage />} />
+            <Route path="/history" element={<HistoryPage />} />
+          </Routes>
+        </Layout>
+        <Toaster position="top-right" />
+      </Router>
+    </SWRConfig>
+  );
+}
+
+export default App;

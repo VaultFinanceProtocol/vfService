@@ -1,0 +1,52 @@
+{
+  "name": "vf-service",
+  "version": "1.0.0",
+  "description": "VaultFinance Service Monorepo - Lending Protocol Backend & Frontend",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "build:backend": "npm run build --workspace=packages/backend",
+    "build:frontend": "npm run build --workspace=packages/frontend",
+    "build:clean": "npm run clean && npm run build",
+    "clean": "npm run clean --workspaces --if-present",
+    "clean:backend": "npm run clean --workspace=packages/backend --if-present",
+    "clean:frontend": "npm run clean --workspace=packages/frontend --if-present",
+    "start:dev": "concurrently \"npm run start:frontend:dev\" \"npm run start:backend:dev\"",
+    "start:frontend:dev": "npm run dev --workspace=packages/frontend",
+    "start:backend:dev": "npm run start:dev --workspace=packages/backend",
+    "start:backend:api": "npm run start:api --workspace=packages/backend",
+    "start:backend:worker": "npm run start:worker --workspace=packages/backend",
+    "docker:up:dev": "docker compose --env-file packages/backend/.env up -d",
+    "docker:down:dev": "docker compose --env-file packages/backend/.env down",
+    "docker:up:test": "docker compose --env-file packages/backend/.env.test up -d",
+    "docker:down:test": "docker compose --env-file packages/backend/.env.test down",
+    "test": "npm run test --workspaces",
+    "test:backend": "npm run test --workspace=packages/backend",
+    "test:frontend": "npm run test --workspace=packages/frontend --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "install:all": "npm install"
+  },
+  "keywords": [
+    "monorepo",
+    "vaultfinance",
+    "lending",
+    "defi",
+    "backend",
+    "frontend"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "concurrently": "^8.2.2",
+    "cross-env": "^10.1.0",
+    "dotenv-cli": "^7.4.0",
+    "rimraf": "^5.0.5",
+    "tsx": "^4.20.6",
+    "typescript": "^5.4.0"
+  }
+}
