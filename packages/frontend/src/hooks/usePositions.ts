@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { positionsApi } from '@services/api';
-import type { PositionSummary, UserAccountData } from '@types/index';
+import type { PositionSummary, UserAccountData } from '@app-types';
 
 export function usePositions(address: string | undefined) {
   const { data, error, isLoading, mutate } = useSWR(

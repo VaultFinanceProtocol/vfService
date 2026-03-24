@@ -23,7 +23,8 @@
       "@hooks/*": ["./src/hooks/*"],
       "@services/*": ["./src/services/*"],
       "@contexts/*": ["./src/contexts/*"],
-      "@types/*": ["./src/types/*"],
+      "@app-types": ["./src/types/index.ts"],
+      "@app-types/*": ["./src/types/*"],
       "@utils/*": ["./src/utils/*"],
       "@lib/*": ["./src/lib/*"]
     }

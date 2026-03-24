@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { historyApi } from '@services/api';
-import type { OperationRecord, OperationStatus } from '@types/index';
+import type { OperationRecord, OperationStatus } from '@app-types';
 
 export function useHistory(
   address: string | undefined,

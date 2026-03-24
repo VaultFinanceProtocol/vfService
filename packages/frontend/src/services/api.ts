@@ -13,7 +13,7 @@ import type {
   LiquidatablePosition,
   LiquidationPreview,
   OperationRecord,
-} from '@types/index';
+} from '@app-types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 

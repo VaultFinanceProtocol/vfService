@@ -5,7 +5,6 @@ import {
   Info,
   XCircle,
   Shield,
-  TrendingDown,
   Flame,
 } from "lucide-react";
 
@@ -146,15 +145,10 @@ interface LiquidationRiskBannerProps {
 
 export function LiquidationRiskBanner({
   healthFactor,
-  liquidationThreshold,
   className,
 }: LiquidationRiskBannerProps) {
   const hf =
     typeof healthFactor === "string" ? parseFloat(healthFactor) : healthFactor;
-  const lt =
-    typeof liquidationThreshold === "string"
-      ? parseFloat(liquidationThreshold)
-      : liquidationThreshold;
 
   if (hf >= 1.2) return null;
 
@@ -244,7 +238,6 @@ export function PoolPausedBanner({
   return (
     <RiskBanner
       variant="warning"
-      icon={AlertTriangle}
       title={`${assetSymbol} Pool Paused`}
       message={
         reason ||
@@ -339,23 +332,3 @@ export function MarketStatusBanner({
   );
 }
 
-// Add icon prop support to RiskBanner
-interface RiskBannerExtendedProps extends RiskBannerProps {
-  icon?: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
-}
-
-export function RiskBannerExtended({
-  variant,
-  icon: CustomIcon,
-  ...props
-}: RiskBannerExtendedProps) {
-  const config = variantConfig[variant];
-  const Icon = CustomIcon || config.icon;
-
-  return (
-    <RiskBanner
-      variant={variant}
-      {...props}
-    />
-  );
-}

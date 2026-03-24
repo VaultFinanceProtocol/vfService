@@ -4,14 +4,14 @@ import { Button } from "@components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/Tabs";
 import { Wallet, TrendingUp, TrendingDown, Shield, AlertTriangle, MinusCircle, PlusCircle } from "lucide-react";
 import { usePositions, useHealthFactor } from "@hooks/usePositions";
-import { formatUSD, formatAmount, formatAPY, formatHealthFactor, formatLTV } from "@utils/format";
+import { formatUSD, formatAmount, formatAPY, formatHealthFactor } from "@utils/format";
 import { OperationModal } from "@components/operations/OperationModal";
-import type { UserPosition } from "@types/index";
+import type { UserPosition } from "@app-types";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";
 
 export function PositionsPage() {
-  const [userAddr, setUserAddr] = useState(MOCK_USER);
+  const [userAddr] = useState(MOCK_USER);
   const { summary, isLoading, mutate: refreshPositions } = usePositions(userAddr);
   const { healthFactor } = useHealthFactor(userAddr);
 

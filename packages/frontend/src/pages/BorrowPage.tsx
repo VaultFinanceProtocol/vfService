@@ -11,9 +11,7 @@ import { AmountDisplay } from "@components/protocol/amount-display";
 import { HealthFactorBadge } from "@components/protocol/health-factor-badge";
 import { QuotePanel, HealthFactorChange } from "@components/protocol/quote-panel";
 import {
-  RiskBanner,
   LiquidationRiskBanner,
-  InsufficientCollateralBanner,
 } from "@components/protocol/risk-banner";
 import { TrendingDown, Wallet, Calculator, AlertTriangle } from "lucide-react";
 import { formatUSD, formatAPY } from "@utils/format";

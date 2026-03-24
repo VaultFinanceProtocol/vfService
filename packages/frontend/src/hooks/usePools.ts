@@ -1,6 +1,5 @@
 import useSWR from 'swr';
 import { poolsApi } from '@services/api';
-import type { Pool, PoolStats } from '@types/index';
 
 export function usePools(offset = 0, limit = 20) {
   const { data, error, isLoading, mutate } = useSWR(

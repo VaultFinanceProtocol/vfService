@@ -24,7 +24,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useHistory } from "@hooks/useHistory";
-import { OperationStatus, OperationType } from "@types/index";
+import { OperationStatus, OperationType } from "@app-types";
 import { formatAmount } from "@utils/format";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";

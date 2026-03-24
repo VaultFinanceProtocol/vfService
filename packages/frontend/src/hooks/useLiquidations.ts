@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useState, useCallback } from 'react';
 import { liquidationApi } from '@services/api';
-import type { LiquidatablePosition, LiquidationPreview } from '@types/index';
+import type { LiquidatablePosition, LiquidationPreview } from '@app-types';
 
 export function useLiquidations() {
   const { data, error, isLoading, mutate } = useSWR(

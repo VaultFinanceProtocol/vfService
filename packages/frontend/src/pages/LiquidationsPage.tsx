@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useLiquidations, useLiquidationPreview } from "@hooks/useLiquidations";
 import { formatUSD, formatAmount } from "@utils/format";
-import type { LiquidatablePosition } from "@types/index";
+import type { LiquidatablePosition } from "@app-types";
 
 export function LiquidationsPage() {
   const { positions, isLoading, refresh } = useLiquidations();

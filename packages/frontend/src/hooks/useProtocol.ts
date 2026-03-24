@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { vaultApi } from '@services/api';
-import type { ProtocolStats } from '@types/index';
+import type { ProtocolStats } from '@app-types';
 
 export function useProtocolStats() {
   const { data, error, isLoading } = useSWR(

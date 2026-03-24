@@ -1,6 +1,6 @@
 import { cn } from "@lib/utils";
 import { ArrowRight, Info, TrendingUp, TrendingDown } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@components/ui/Card";
 import { AmountDisplay } from "./amount-display";
 
 interface QuoteItem {
@@ -63,10 +63,10 @@ export function QuotePanel({
 }: QuotePanelProps) {
   return (
     <Card className={cn("w-full", className)}>
-      <CardHeader
-        title={title || operationTitles[operation]}
-        subtitle={subtitle}
-      />
+      <CardHeader>
+        <CardTitle>{title || operationTitles[operation]}</CardTitle>
+        {subtitle && <CardDescription>{subtitle}</CardDescription>}
+      </CardHeader>
       <CardContent className="space-y-4">
         {/* Asset Flow */}
         <div

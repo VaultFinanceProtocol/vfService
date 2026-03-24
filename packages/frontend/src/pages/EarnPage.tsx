@@ -8,10 +8,8 @@ import { Label } from "@components/ui/Label";
 import { usePools } from "@hooks/usePools";
 import { useQuote } from "@hooks/useQuotes";
 import { AmountDisplay } from "@components/protocol/amount-display";
-import { HealthFactorBadge } from "@components/protocol/health-factor-badge";
 import { QuotePanel } from "@components/protocol/quote-panel";
-import { RiskBanner, LiquidationRiskBanner } from "@components/protocol/risk-banner";
-import { TrendingUp, PiggyBank, Calculator, ChevronDown } from "lucide-react";
+import { TrendingUp, PiggyBank, Calculator } from "lucide-react";
 import { formatUSD, formatAPY } from "@utils/format";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";

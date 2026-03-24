@@ -1,7 +1,6 @@
-import useSWR from 'swr';
 import { useState, useCallback } from 'react';
 import { quotesApi } from '@services/api';
-import type { QuoteRequest, QuoteResponse } from '@types/index';
+import type { QuoteRequest, QuoteResponse } from '@app-types';
 
 export function useQuote(operation: 'supply' | 'withdraw' | 'borrow' | 'repay') {
   const [quote, setQuote] = useState<QuoteResponse | null>(null);

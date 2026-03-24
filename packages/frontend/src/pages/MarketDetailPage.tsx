@@ -10,7 +10,7 @@ import { usePool } from "@hooks/usePools";
 import { useQuote } from "@hooks/useQuotes";
 import { formatUSD, formatAPY, formatAmount, formatLTV, formatHealthFactor } from "@utils/format";
 import { ArrowLeft, Calculator, AlertTriangle, CheckCircle } from "lucide-react";
-import type { QuoteResponse } from "@types/index";
+// QuoteResponse type used implicitly via hook return types
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";
 const ASSET_PRICES: Record<string, number> = {
@@ -71,7 +71,6 @@ export function MarketDetailPage() {
 
   const price = ASSET_PRICES[pool.asset] || 0;
   const liquidityUSD = (parseFloat(pool.liquidity) / 10 ** pool.decimals) * price;
-  const suppliedUSD = (parseFloat(pool.totalSupplied) / 10 ** pool.decimals) * price;
 
   const currentQuote = activeTab === "supply" ? supplyQuote.quote : borrowQuote.quote;
   const isQuoteLoading = activeTab === "supply" ? supplyQuote.isLoading : borrowQuote.isLoading;
