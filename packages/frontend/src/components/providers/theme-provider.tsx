@@ -95,13 +95,15 @@ export function ThemeProvider({ children, defaultTheme }: ThemeProviderProps) {
     });
   };
 
-  // Prevent flash during hydration
-  if (!mounted) {
-    return <>{children}</>;
-  }
+  const value = {
+    theme,
+    resolvedTheme: mounted ? resolvedTheme : 'light',
+    setTheme,
+    toggleTheme,
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );
