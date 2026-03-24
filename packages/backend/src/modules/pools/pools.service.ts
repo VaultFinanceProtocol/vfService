@@ -104,4 +104,21 @@ export class PoolsService {
         pool.name.toLowerCase().includes(lowerQuery)
     );
   }
+
+  /**
+   * Get active pools (not paused)
+   */
+  async getActivePools(): Promise<PoolView[]> {
+    const allPools = await this.protocolService.getPools();
+    return allPools.filter(pool => !pool.paused);
+  }
+
+  /**
+   * Update pool price (called by price worker)
+   */
+  async updatePoolPrice(asset: string, price: number): Promise<void> {
+    this.logger.debug(`Updating pool price for ${asset}: $${price}`);
+    // In a real implementation, this would update the pool's USD values
+    // based on the new price. For now, we just log it.
+  }
 }

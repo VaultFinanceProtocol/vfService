@@ -74,4 +74,16 @@ export class PriceService {
     const amountNum = Number(amount) / 10 ** decimals;
     return (amountNum * price).toFixed(2);
   }
+
+  /**
+   * Fetch price from oracle/sources
+   */
+  async fetchPrice(asset: string): Promise<number | null> {
+    const price = this.mockPrices[asset];
+    if (!price) {
+      this.logger.warn(`Price not found for asset ${asset}`);
+      return null;
+    }
+    return price;
+  }
 }

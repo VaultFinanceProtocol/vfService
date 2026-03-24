@@ -22,6 +22,10 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { ExecutionModule } from './modules/execution/execution.module';
 import { HistoryModule } from './modules/history/history.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { WorkersModule } from './modules/workers/workers.module';
+import { WebsocketModule } from './modules/websocket/websocket.module';
+import { LiquidationModule } from './modules/liquidation/liquidation.module';
+import { PriceModule } from './modules/price/price.module';
 
 @Module({
   imports: [
@@ -61,6 +65,10 @@ import { AdminModule } from './modules/admin/admin.module';
     ExecutionModule,
     HistoryModule,
     AdminModule,
+    WorkersModule,
+    WebsocketModule,
+    LiquidationModule,
+    PriceModule,
   ],
 })
 export class AppModule {}
