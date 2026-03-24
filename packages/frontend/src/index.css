@@ -1,51 +1,67 @@
+/**
+ * VaultFinance Theme System
+ *
+ * 1. Import theme tokens and fonts
+ * 2. Tailwind directives
+ * 3. Component layer overrides
+ */
+
+/* Theme system */
+@import './styles/theme.css';
+@import './styles/fonts.css';
+
+/* Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Map our custom tokens to Tailwind's theme for compatibility */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    /* shadcn/ui compatibility */
+    --background: var(--bg);
+    --foreground: var(--fg);
+    --card: var(--card);
+    --card-foreground: var(--card-foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--fg);
+    --primary: var(--primary);
+    --primary-foreground: var(--primary-contrast);
+    --secondary: var(--bg-elevated);
+    --secondary-foreground: var(--fg);
+    --muted: var(--bg-muted);
+    --muted-foreground: var(--fg-muted);
+    --accent: var(--primary-muted);
+    --accent-foreground: var(--primary);
+    --destructive: var(--danger);
+    --destructive-foreground: var(--danger-contrast);
+    --border: var(--border);
+    --input: var(--border);
+    --ring: var(--primary);
+    --radius: var(--radius-md);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: var(--bg);
+    --foreground: var(--fg);
+    --card: var(--card);
+    --card-foreground: var(--card-foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--fg);
+    --primary: var(--primary);
+    --primary-foreground: var(--primary-contrast);
+    --secondary: var(--bg-elevated);
+    --secondary-foreground: var(--fg);
+    --muted: var(--bg-muted);
+    --muted-foreground: var(--fg-muted);
+    --accent: var(--primary-muted);
+    --accent-foreground: var(--primary);
+    --destructive: var(--danger);
+    --destructive-foreground: var(--danger-contrast);
+    --border: var(--border);
+    --input: var(--border);
+    --ring: var(--primary);
+    --radius: var(--radius-md);
   }
 }
 
@@ -53,7 +69,187 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[var(--bg)] text-[var(--fg)] antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Smooth theme transitions */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-out);
+  }
+
+  /* Disable transitions on theme toggle for performance */
+  .theme-transition-disabled *,
+  .theme-transition-disabled *::before,
+  .theme-transition-disabled *::after {
+    transition: none !important;
+  }
+}
+
+@layer components {
+  /* Card component using semantic tokens */
+  .card-themed {
+    @apply rounded-lg border bg-[var(--card)] shadow-sm;
+    border-color: var(--border);
+  }
+
+  .card-themed:hover {
+    background-color: var(--card-hover);
+  }
+
+  /* Button variants */
+  .btn-primary {
+    @apply px-4 py-2 rounded-md font-medium;
+    background-color: var(--primary);
+    color: var(--primary-contrast);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-md font-medium border;
+    background-color: var(--bg-elevated);
+    border-color: var(--border);
+    color: var(--fg);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--bg-hover);
+  }
+
+  /* Input styling */
+  .input-themed {
+    @apply px-3 py-2 rounded-md border outline-none;
+    background-color: var(--bg-elevated);
+    border-color: var(--border);
+    color: var(--fg);
+  }
+
+  .input-themed:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-muted);
+  }
+
+  /* Table styling */
+  .table-themed {
+    @apply w-full;
+  }
+
+  .table-themed th {
+    @apply px-4 py-3 text-left text-sm font-medium;
+    color: var(--fg-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-themed td {
+    @apply px-4 py-3;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-themed tr:hover {
+    background-color: var(--bg-hover);
+  }
+
+  /* Badge variants */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-safe {
+    background-color: var(--risk-safe-bg);
+    color: var(--risk-safe);
+  }
+
+  .badge-warning {
+    background-color: var(--risk-warning-bg);
+    color: var(--risk-warning);
+  }
+
+  .badge-danger {
+    background-color: var(--risk-danger-bg);
+    color: var(--risk-danger);
+  }
+
+  .badge-paused {
+    background-color: var(--risk-paused-bg);
+    color: var(--risk-paused);
+  }
+
+  /* Amount display */
+  .amount {
+    @apply font-medium tabular-nums tracking-tight;
+    font-feature-settings: "tnum";
+  }
+
+  .amount-lg {
+    @apply text-2xl;
+  }
+
+  /* Health factor display */
+  .health-factor {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-semibold tabular-nums;
+  }
+
+  .health-factor.safe {
+    background-color: var(--risk-safe-bg);
+    color: var(--risk-safe);
+  }
+
+  .health-factor.warning {
+    background-color: var(--risk-warning-bg);
+    color: var(--risk-warning);
+  }
+
+  .health-factor.danger {
+    background-color: var(--risk-danger-bg);
+    color: var(--risk-danger);
+  }
+}
+
+@layer utilities {
+  /* Text colors */
+  .text-fg { color: var(--fg); }
+  .text-fg-muted { color: var(--fg-muted); }
+  .text-fg-secondary { color: var(--fg-secondary); }
+
+  /* Background colors */
+  .bg-themed { background-color: var(--bg); }
+  .bg-elevated { background-color: var(--bg-elevated); }
+  .bg-card { background-color: var(--card); }
+
+  /* Border colors */
+  .border-themed { border-color: var(--border); }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn var(--duration-normal) var(--ease-out);
+  }
+
+  .animate-slide-up {
+    animation: slideUp var(--duration-normal) var(--ease-out);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
