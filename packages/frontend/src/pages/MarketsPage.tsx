@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/Card";
 import { Button } from "@components/ui/Button";
-import { Input } from "@components/ui/Input";
-import { Search, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, PiggyBank, Wallet, BarChart3 } from "lucide-react";
 import { usePools } from "@hooks/usePools";
-import { formatUSD, formatAPY, formatAmount } from "@utils/format";
+import { useProtocolStats } from "@hooks/useProtocol";
+import { formatUSD, formatAPY } from "@utils/format";
 import { Link } from "react-router-dom";
 
 const ASSET_PRICES: Record<string, number> = {
@@ -14,6 +14,9 @@ const ASSET_PRICES: Record<string, number> = {
 
 export function MarketsPage() {
   const { pools, isLoading } = usePools(0, 100);
+  const { stats, isLoading: statsLoading } = useProtocolStats();
+
+  const isPageLoading = isLoading || statsLoading;
 
   return (
     <div className="space-y-6">
@@ -24,6 +27,61 @@ export function MarketsPage() {
             Browse all available lending markets
           </p>
         </div>
+      </div>
+
+      {/* Protocol Stats */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Value Locked</CardTitle>
+            <PiggyBank className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isPageLoading ? "..." : formatUSD(stats?.totalValueLocked)}
+            </div>
+            <p className="text-xs text-muted-foreground">Protocol TVL</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Supplied</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isPageLoading ? "..." : formatUSD(stats?.totalSupplied)}
+            </div>
+            <p className="text-xs text-muted-foreground">Across all pools</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Borrowed</CardTitle>
+            <Wallet className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isPageLoading ? "..." : formatUSD(stats?.totalBorrowed)}
+            </div>
+            <p className="text-xs text-muted-foreground">Active loans</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Pools</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isPageLoading ? "..." : stats?.poolCount || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">Available markets</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>

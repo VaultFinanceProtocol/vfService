@@ -1,9 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Wallet, AlertTriangle, History } from 'lucide-react';
+import { BarChart3, Wallet, AlertTriangle, History } from 'lucide-react';
 import { cn } from '@lib/utils';
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
   { icon: BarChart3, label: 'Markets', path: '/markets' },
   { icon: Wallet, label: 'My Positions', path: '/positions' },
   { icon: AlertTriangle, label: 'Liquidations', path: '/liquidations' },
@@ -19,7 +18,8 @@ export function Sidebar() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path ||
-            (item.path !== '/' && location.pathname.startsWith(item.path));
+            (item.path !== '/' && location.pathname.startsWith(item.path)) ||
+            (item.path === '/markets' && location.pathname === '/');
 
           return (
             <Link

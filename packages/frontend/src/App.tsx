@@ -1,8 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { SWRConfig } from 'swr';
 import { Toaster } from 'sonner';
 import { Layout } from '@components/layout/Layout';
-import { DashboardPage } from '@pages/DashboardPage';
 import { MarketsPage } from '@pages/MarketsPage';
 import { MarketDetailPage } from '@pages/MarketDetailPage';
 import { PositionsPage } from '@pages/PositionsPage';
@@ -21,7 +20,7 @@ function App() {
       <Router>
         <Layout>
           <Routes>
-            <Route path="/" element={<DashboardPage />} />
+            <Route path="/" element={<Navigate to="/markets" replace />} />
             <Route path="/markets" element={<MarketsPage />} />
             <Route path="/markets/:asset" element={<MarketDetailPage />} />
             <Route path="/positions" element={<PositionsPage />} />
