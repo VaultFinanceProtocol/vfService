@@ -1,0 +1,20 @@
+# Docker data directories
+# These directories contain runtime data and should not be committed
+
+# Redis
+redis/data/
+redis/*.aof
+redis/*.rdb
+
+# PostgreSQL
+postgres/data/
+postgres/*.sql
+postgres/*.dump
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
