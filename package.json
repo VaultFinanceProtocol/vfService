@@ -27,8 +27,14 @@
     "test:backend": "npm run test --workspace=packages/backend",
     "test:frontend": "npm run test --workspace=packages/frontend --if-present",
     "lint": "npm run lint --workspaces --if-present",
+    "lint:backend": "npm run lint --workspace=packages/backend --if-present",
+    "lint:frontend": "npm run lint --workspace=packages/frontend --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "install:all": "npm install"
+    "typecheck:backend": "npm run typecheck --workspace=packages/backend --if-present",
+    "typecheck:frontend": "npm run typecheck --workspace=packages/frontend --if-present",
+    "install:all": "npm install",
+    "docker:up:prod": "docker compose -f docker-compose.production.yml up -d",
+    "docker:down:prod": "docker compose -f docker-compose.production.yml down"
   },
   "keywords": [
     "monorepo",

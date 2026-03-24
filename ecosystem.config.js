@@ -1,0 +1,86 @@
+module.exports = {
+  apps: [
+    {
+      name: 'vfservice-api',
+      script: './packages/backend/dist/main.js',
+      cwd: '.',
+      instances: 1,
+      exec_mode: 'fork',
+      env: {
+        NODE_ENV: 'development',
+      },
+      env_production: {
+        NODE_ENV: 'production',
+      },
+      log_file: './logs/vfservice-api.log',
+      out_file: './logs/vfservice-api-out.log',
+      error_file: './logs/vfservice-api-error.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      merge_logs: true,
+      max_memory_restart: '1G',
+      restart_delay: 3000,
+      max_restarts: 10,
+      min_uptime: '10s',
+      watch: false,
+      ignore_watch: ['node_modules', 'logs', '.git'],
+      autorestart: true,
+      kill_timeout: 5000,
+      listen_timeout: 10000,
+      // Health monitoring
+      monitor: true,
+      // Graceful shutdown
+      shutdown_with_message: true,
+      // Source map support
+      source_map_support: true,
+    },
+    {
+      name: 'vfservice-worker',
+      script: './packages/backend/dist/main.js',
+      cwd: '.',
+      args: '--worker',
+      instances: 1,
+      exec_mode: 'fork',
+      env: {
+        NODE_ENV: 'development',
+        ENABLE_WORKERS: 'true',
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        ENABLE_WORKERS: 'true',
+      },
+      log_file: './logs/vfservice-worker.log',
+      out_file: './logs/vfservice-worker-out.log',
+      error_file: './logs/vfservice-worker-error.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      merge_logs: true,
+      max_memory_restart: '512M',
+      restart_delay: 5000,
+      max_restarts: 10,
+      min_uptime: '10s',
+      watch: false,
+      autorestart: true,
+    },
+  ],
+
+  deploy: {
+    production: {
+      user: 'deploy',
+      host: ['production-server'],
+      ref: 'origin/main',
+      repo: 'https://github.com/VaultFinanceProtocol/vfService.git',
+      path: '/var/www/vfservice',
+      'pre-deploy-local': '',
+      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
+      'pre-setup': '',
+      'ssh_options': 'StrictHostKeyChecking=no',
+    },
+    testnet: {
+      user: 'deploy',
+      host: ['testnet-server'],
+      ref: 'origin/dev',
+      repo: 'https://github.com/VaultFinanceProtocol/vfService.git',
+      path: '/var/www/vfservice',
+      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
+    },
+  },
+};

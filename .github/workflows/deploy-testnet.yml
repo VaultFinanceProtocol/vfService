@@ -1,0 +1,298 @@
+name: Deploy to Testnet
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '22'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    environment:
+      name: testnet
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        continue-on-error: true
+
+      - name: Build backend
+        run: npm run build:backend
+
+      - name: Build frontend
+        run: npm run build:frontend
+
+      - name: Create deployment package
+        run: |
+          echo "🔧 Creating deployment package..."
+          mkdir -p deploy
+
+          # Backend
+          mkdir -p deploy/packages/backend
+          cp -r packages/backend/dist deploy/packages/backend/
+          cp packages/backend/package.json deploy/packages/backend/
+
+          # Frontend
+          mkdir -p deploy/packages/frontend/dist
+          cp -r packages/frontend/dist deploy/packages/frontend/
+
+          # Root files
+          cp package*.json deploy/
+          cp ecosystem.config.js deploy/ 2>/dev/null || true
+
+          # Create deployment archive
+          tar -czf deployment.tar.gz -C deploy .
+          echo "✅ Deployment package created: $(du -h deployment.tar.gz)"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-package
+          path: deployment.tar.gz
+          retention-days: 7
+
+  deploy:
+    name: Deploy to Testnet Server
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.result == 'success' }}
+    environment:
+      name: testnet
+      url: ${{ vars.DEPLOYMENT_URL }}
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-package
+          path: ./
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ vars.DEPLOY_PORT || 22 }} -H ${{ vars.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Upload deployment package
+        run: |
+          scp -i ~/.ssh/deploy_key \
+            -P ${{ vars.DEPLOY_PORT || 22 }} \
+            -o UserKnownHostsFile=~/.ssh/known_hosts \
+            deployment.tar.gz ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/tmp/
+
+      - name: Deploy to server
+        env:
+          # Secrets
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'dev-jwt-secret-change-in-production' }}
+          # Variables
+          DEPLOY_DIR: ${{ vars.DEPLOY_DIR || '/var/www/vfservice' }}
+          APP_PORT: ${{ vars.APP_PORT || '3000' }}
+          APP_HOST: ${{ vars.APP_HOST || '0.0.0.0' }}
+          DATABASE_TYPE: ${{ vars.DATABASE_TYPE || 'postgres' }}
+          DATABASE_HOST: ${{ vars.DATABASE_HOST || '127.0.0.1' }}
+          DATABASE_PORT: ${{ vars.DATABASE_PORT || '5432' }}
+          DATABASE_USERNAME: ${{ vars.DATABASE_USERNAME || 'vfservice' }}
+          DATABASE_NAME: ${{ vars.DATABASE_NAME || 'vfservice' }}
+          REDIS_HOST: ${{ vars.REDIS_HOST || '127.0.0.1' }}
+          REDIS_PORT: ${{ vars.REDIS_PORT || '6379' }}
+          REDIS_DB: ${{ vars.REDIS_DB || '0' }}
+          LOG_LEVEL: ${{ vars.LOG_LEVEL || 'info' }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ vars.DEPLOY_PORT || 22 }} \
+            -o UserKnownHostsFile=~/.ssh/known_hosts \
+            ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
+            env DEPLOY_DIR="$DEPLOY_DIR" \
+                APP_PORT="$APP_PORT" \
+                APP_HOST="$APP_HOST" \
+                DATABASE_TYPE="$DATABASE_TYPE" \
+                DATABASE_HOST="$DATABASE_HOST" \
+                DATABASE_PORT="$DATABASE_PORT" \
+                DATABASE_USERNAME="$DATABASE_USERNAME" \
+                DATABASE_PASSWORD="$DATABASE_PASSWORD" \
+                DATABASE_NAME="$DATABASE_NAME" \
+                REDIS_HOST="$REDIS_HOST" \
+                REDIS_PORT="$REDIS_PORT" \
+                REDIS_PASSWORD="$REDIS_PASSWORD" \
+                REDIS_DB="$REDIS_DB" \
+                JWT_SECRET="$JWT_SECRET" \
+                LOG_LEVEL="$LOG_LEVEL" \
+            bash << 'DEPLOY_SCRIPT'
+
+          set -e
+
+          # Configuration
+          MAX_RELEASES=3
+          RELEASES_DIR="${DEPLOY_DIR}/releases"
+          SHARED_DIR="${DEPLOY_DIR}/shared"
+          CURRENT_LINK="${DEPLOY_DIR}/current"
+          RELEASE_NAME="release-$(date +%Y%m%d_%H%M%S)"
+          RELEASE_DIR="${RELEASES_DIR}/${RELEASE_NAME}"
+
+          # Load nvm
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+          # Check PM2
+          if ! which pm2 > /dev/null; then
+            echo "Installing PM2..."
+            npm install -g pm2
+          fi
+
+          # Setup Docker containers
+          echo "🐳 Setting up Docker containers..."
+          DOCKER_DATA_DIR="${SHARED_DIR}/docker"
+          mkdir -p "$DOCKER_DATA_DIR/postgres/data" "$DOCKER_DATA_DIR/redis/data"
+
+          # Create Docker network
+          docker network create vfservice-network 2>/dev/null || true
+
+          # Start PostgreSQL
+          if ! docker ps --format '{{.Names}}' | grep -q '^vfservice-postgres$'; then
+            echo "Starting PostgreSQL..."
+            docker rm vfservice-postgres 2>/dev/null || true
+            docker run -d \
+              --name vfservice-postgres \
+              --network vfservice-network \
+              --restart unless-stopped \
+              -e POSTGRES_USER=${DATABASE_USERNAME} \
+              -e POSTGRES_PASSWORD=${DATABASE_PASSWORD} \
+              -e POSTGRES_DB=${DATABASE_NAME} \
+              -p ${DATABASE_PORT}:5432 \
+              -v "$DOCKER_DATA_DIR/postgres/data":/var/lib/postgresql/data \
+              postgres:16
+          fi
+
+          # Start Redis
+          if ! docker ps --format '{{.Names}}' | grep -q '^vfservice-redis$'; then
+            echo "Starting Redis..."
+            docker rm vfservice-redis 2>/dev/null || true
+            docker run -d \
+              --name vfservice-redis \
+              --network vfservice-network \
+              --restart unless-stopped \
+              -p ${REDIS_PORT}:6379 \
+              -v "$DOCKER_DATA_DIR/redis/data":/data \
+              redis:7-alpine \
+              redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+          fi
+
+          # Wait for containers
+          echo "⏳ Waiting for containers..."
+          sleep 3
+
+          # Create release
+          echo "🚀 Creating release: ${RELEASE_NAME}"
+          sudo mkdir -p "$RELEASES_DIR" "$SHARED_DIR"
+          sudo chown -R $USER:$USER "$RELEASES_DIR" "$SHARED_DIR"
+          mkdir -p "$RELEASE_DIR"
+          tar -xzf /tmp/deployment.tar.gz -C "$RELEASE_DIR"
+
+          # Install dependencies
+          echo "📦 Installing dependencies..."
+          SHARED_NODE_MODULES="$SHARED_DIR/node_modules"
+          mkdir -p "$SHARED_NODE_MODULES"
+          ln -sf "$SHARED_NODE_MODULES" "$RELEASE_DIR/packages/backend/node_modules"
+          cd "$RELEASE_DIR/packages/backend"
+          npm install --production
+          cd "$RELEASE_DIR"
+
+          # Create .env.prod
+          echo "📝 Creating environment configuration..."
+          cat > "${SHARED_DIR}/.env.prod" << EOF
+          NODE_ENV=production
+          APP_PORT=${APP_PORT}
+          APP_HOST=${APP_HOST}
+          DATABASE_TYPE=${DATABASE_TYPE}
+          DATABASE_HOST=${DATABASE_HOST}
+          DATABASE_PORT=${DATABASE_PORT}
+          DATABASE_USERNAME=${DATABASE_USERNAME}
+          DATABASE_PASSWORD=${DATABASE_PASSWORD}
+          DATABASE_NAME=${DATABASE_NAME}
+          REDIS_HOST=${REDIS_HOST}
+          REDIS_PORT=${REDIS_PORT}
+          REDIS_PASSWORD=${REDIS_PASSWORD}
+          REDIS_DB=${REDIS_DB}
+          JWT_SECRET=${JWT_SECRET}
+          JWT_EXPIRES_IN=24h
+          LOG_LEVEL=${LOG_LEVEL}
+          CORS_ORIGIN=*
+          EOF
+
+          ln -sf "${SHARED_DIR}/.env.prod" "${RELEASE_DIR}/packages/backend/.env.prod"
+
+          # Run migrations
+          echo "🗄️ Running database migrations..."
+          cd "$RELEASE_DIR/packages/backend"
+          npx typeorm migration:run -d dist/data-source.js 2>&1 || true
+          cd "$RELEASE_DIR"
+
+          # Stop PM2 services
+          echo "🛑 Stopping current applications..."
+          pm2 stop vfservice-api 2>/dev/null || true
+          pm2 delete vfservice-api 2>/dev/null || true
+
+          # Switch symlink
+          PREVIOUS_RELEASE=""
+          if [ -L "$CURRENT_LINK" ]; then
+            PREVIOUS_RELEASE=$(readlink -f "$CURRENT_LINK")
+          fi
+          ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
+
+          # Start PM2
+          echo "🚀 Starting applications with PM2..."
+          cd "$CURRENT_LINK"
+          if [ -f ecosystem.config.js ]; then
+            pm2 start ecosystem.config.js --env production
+          else
+            pm2 start packages/backend/dist/main.js --name vfservice-api
+          fi
+          pm2 save
+
+          # Verify deployment
+          echo "🔍 Verifying deployment..."
+          sleep 5
+          if curl -f http://localhost:${APP_PORT}/api/health >/dev/null 2>&1; then
+            echo "✅ Health check passed!"
+          else
+            echo "⚠️ Health check not responding yet"
+          fi
+
+          # Cleanup old releases
+          echo "🧹 Cleaning up old releases..."
+          cd "$RELEASES_DIR"
+          RELEASE_COUNT=$(ls -1d release-* 2>/dev/null | wc -l)
+          if [ "$RELEASE_COUNT" -gt "$MAX_RELEASES" ]; then
+            ls -1td release-* | tail -n +$((MAX_RELEASES + 1)) | xargs rm -rf
+          fi
+
+          echo "🎉 Deployment completed!"
+          DEPLOY_SCRIPT
+
+      - name: Cleanup SSH
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

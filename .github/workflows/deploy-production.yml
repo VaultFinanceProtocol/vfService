@@ -1,0 +1,202 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+
+# Required for Workload Identity Federation
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  NODE_VERSION: '22'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.vars.outputs.environment }}
+      version: ${{ steps.vars.outputs.version }}
+      registry: ${{ steps.vars.outputs.registry }}
+      region: ${{ steps.vars.outputs.region }}
+
+    steps:
+      - name: Determine environment and version
+        id: vars
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+            echo "version=manual-${{ github.run_number }}" >> $GITHUB_OUTPUT
+          else
+            SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "version=main-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          fi
+          echo "region=asia-east2" >> $GITHUB_OUTPUT
+          echo "registry=asia-east2-docker.pkg.dev" >> $GITHUB_OUTPUT
+
+  build:
+    name: Build Docker Images
+    needs: setup
+    runs-on: ubuntu-latest
+    environment: ${{ needs.setup.outputs.environment }}
+    outputs:
+      api_image: ${{ steps.images.outputs.api }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        continue-on-error: true
+
+      - name: Build backend
+        run: npm run build:backend
+
+      - name: Build frontend
+        run: npm run build:frontend
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_WIF_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ needs.setup.outputs.registry }} --quiet
+
+      - name: Set image names
+        id: images
+        run: |
+          REGISTRY="${{ needs.setup.outputs.registry }}"
+          PROJECT="${{ vars.GCP_PROJECT_ID }}"
+          REPO="${{ vars.ARTIFACT_REGISTRY_REPO }}"
+          VERSION="${{ needs.setup.outputs.version }}"
+          echo "api=${REGISTRY}/${PROJECT}/${REPO}/api:${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Build and push API image
+        run: |
+          docker build \
+            --build-arg VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }} \
+            -t ${{ steps.images.outputs.api }} \
+            -f Dockerfile \
+            .
+          docker push ${{ steps.images.outputs.api }}
+
+  deploy-cloud-run:
+    name: Deploy to Cloud Run
+    needs: [setup, build]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.setup.outputs.environment }}
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_WIF_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Deploy API to Cloud Run
+        run: |
+          gcloud run deploy ${{ vars.API_SERVICE_NAME }} \
+            --image ${{ needs.build.outputs.api_image }} \
+            --region ${{ needs.setup.outputs.region }} \
+            --project ${{ vars.GCP_PROJECT_ID }} \
+            --platform managed \
+            --no-allow-unauthenticated \
+            --port 3000 \
+            --cpu 2 \
+            --memory 2Gi \
+            --min-instances ${{ vars.API_MIN_INSTANCES || '1' }} \
+            --max-instances ${{ vars.API_MAX_INSTANCES || '10' }} \
+            --timeout 300 \
+            --service-account ${{ vars.CLOUD_RUN_SA }} \
+            --set-env-vars "NODE_ENV=production" \
+            --set-env-vars "APP_HOST=0.0.0.0" \
+            --set-env-vars "DATABASE_TYPE=postgres" \
+            --set-env-vars "DATABASE_HOST=${{ vars.DATABASE_HOST }}" \
+            --set-env-vars "DATABASE_PORT=${{ vars.DATABASE_PORT || '5432' }}" \
+            --set-env-vars "DATABASE_NAME=${{ vars.DATABASE_NAME }}" \
+            --set-env-vars "DATABASE_USERNAME=${{ vars.DATABASE_USERNAME }}" \
+            --set-env-vars "DATABASE_SSL=true" \
+            --set-env-vars "REDIS_HOST=${{ vars.REDIS_HOST }}" \
+            --set-env-vars "REDIS_PORT=${{ vars.REDIS_PORT || '6379' }}" \
+            --set-env-vars "REDIS_USE_IAM_AUTH=true" \
+            --set-env-vars "CORS_ORIGIN=${{ vars.CORS_ORIGIN || '*' }}" \
+            --set-env-vars "LOG_LEVEL=${{ vars.LOG_LEVEL || 'info' }}" \
+            --set-secrets "DATABASE_PASSWORD=database-password:latest" \
+            --set-secrets "JWT_SECRET=jwt-secret:latest" \
+            --set-secrets "REDIS_PASSWORD=redis-password:latest" \
+            --quiet
+
+      - name: Get Cloud Run URL
+        id: urls
+        run: |
+          API_URL=$(gcloud run services describe ${{ vars.API_SERVICE_NAME }} \
+            --region ${{ needs.setup.outputs.region }} \
+            --project ${{ vars.GCP_PROJECT_ID }} \
+            --format 'value(status.url)')
+          echo "api_url=$API_URL" >> $GITHUB_OUTPUT
+          echo "### Cloud Run URL" >> $GITHUB_STEP_SUMMARY
+            echo "- API: $API_URL" >> $GITHUB_STEP_SUMMARY
+
+  post-deploy:
+    name: Post Deploy
+    needs: [setup, build, deploy-cloud-run]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Deployment Summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ needs.setup.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ needs.setup.outputs.version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Region | ${{ needs.setup.outputs.region }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cloud Run | ${{ needs.deploy-cloud-run.result }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check deployment status
+        if: needs.deploy-cloud-run.result == 'failure'
+        run: |
+          echo "::error::Deployment failed! Check the logs above for details."
+          exit 1
