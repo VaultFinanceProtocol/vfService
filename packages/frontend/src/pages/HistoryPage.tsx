@@ -10,40 +10,47 @@ import {
   SelectValue,
 } from "@components/ui/Select";
 import {
-  History,
   RefreshCw,
-  ArrowUpCircle,
-  ArrowDownCircle,
-  MinusCircle,
-  PlusCircle,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  XCircle,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { useHistory } from "@hooks/useHistory";
 import { OperationStatus, OperationType } from "@app-types";
 import { formatAmount } from "@utils/format";
+import { cn } from "@lib/utils";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";
 
-const typeIcons: Record<OperationType, React.ReactNode> = {
-  [OperationType.SUPPLY]: <ArrowUpCircle className="h-4 w-4 text-green-600" />,
-  [OperationType.WITHDRAW]: <ArrowDownCircle className="h-4 w-4 text-orange-600" />,
-  [OperationType.BORROW]: <PlusCircle className="h-4 w-4 text-blue-600" />,
-  [OperationType.REPAY]: <MinusCircle className="h-4 w-4 text-purple-600" />,
-  [OperationType.LIQUIDATE]: <AlertTriangle className="h-4 w-4 text-red-600" />,
-  [OperationType.SET_COLLATERAL]: <CheckCircle className="h-4 w-4 text-gray-600" />,
+const statusConfig: Record<OperationStatus, { bg: string; text: string }> = {
+  [OperationStatus.DRAFTED]: { 
+    bg: 'var(--bg-muted)', 
+    text: 'var(--fg-muted)', 
+  },
+  [OperationStatus.BROADCAST]: { 
+    bg: 'var(--primary-muted)', 
+    text: 'var(--primary)', 
+  },
+  [OperationStatus.PENDING]: { 
+    bg: 'var(--warning-muted)', 
+    text: 'var(--warning)', 
+  },
+  [OperationStatus.CONFIRMED]: { 
+    bg: 'var(--success-muted)', 
+    text: 'var(--success)', 
+  },
+  [OperationStatus.FAILED]: { 
+    bg: 'var(--danger-muted)', 
+    text: 'var(--danger)', 
+  },
 };
 
-const statusConfig: Record<OperationStatus, { color: string; icon: React.ReactNode }> = {
-  [OperationStatus.DRAFTED]: { color: "bg-gray-100 text-gray-800", icon: <Clock className="h-3 w-3" /> },
-  [OperationStatus.BROADCAST]: { color: "bg-blue-100 text-blue-800", icon: <Clock className="h-3 w-3" /> },
-  [OperationStatus.PENDING]: { color: "bg-yellow-100 text-yellow-800", icon: <Clock className="h-3 w-3" /> },
-  [OperationStatus.CONFIRMED]: { color: "bg-green-100 text-green-800", icon: <CheckCircle className="h-3 w-3" /> },
-  [OperationStatus.FAILED]: { color: "bg-red-100 text-red-800", icon: <XCircle className="h-3 w-3" /> },
+const typeLabels: Record<OperationType, string> = {
+  [OperationType.SUPPLY]: 'Supply',
+  [OperationType.WITHDRAW]: 'Withdraw',
+  [OperationType.BORROW]: 'Borrow',
+  [OperationType.REPAY]: 'Repay',
+  [OperationType.LIQUIDATE]: 'Liquidate',
+  [OperationType.SET_COLLATERAL]: 'Set Collateral',
 };
 
 export function HistoryPage() {
@@ -75,19 +82,23 @@ export function HistoryPage() {
     return date.toLocaleString();
   };
 
-  const formatType = (type: OperationType) => {
-    return type.charAt(0).toUpperCase() + type.slice(1);
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">History</h2>
-          <p className="text-muted-foreground">View your transaction history</p>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--fg)]">
+            History
+          </h1>
+          <p className="text-[var(--fg-muted)] mt-1">View your transaction history</p>
         </div>
-        <Button variant="outline" onClick={() => refresh()} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+        <Button 
+          variant="outline" 
+          onClick={() => refresh()} 
+          disabled={isLoading}
+          className="rounded-lg gap-2"
+        >
+          <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           Refresh
         </Button>
       </div>
@@ -97,15 +108,15 @@ export function HistoryPage() {
         <CardContent className="pt-6">
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Status:</span>
+              <span className="text-sm font-medium text-[var(--fg-muted)]">Status:</span>
               <Select
                 value={status || "all"}
                 onValueChange={(value) => setStatus(value === "all" ? undefined : (value as OperationStatus))}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[180px] rounded-lg h-10">
                   <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-lg">
                   <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value={OperationStatus.DRAFTED}>Drafted</SelectItem>
                   <SelectItem value={OperationStatus.BROADCAST}>Broadcast</SelectItem>
@@ -120,60 +131,54 @@ export function HistoryPage() {
       </Card>
 
       {/* History List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <History className="h-5 w-5" />
-            Transaction History
-          </CardTitle>
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-[var(--border)]">
+          <CardTitle className="text-lg">Transaction History</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="text-center py-12">
-              <RefreshCw className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
-              <p className="mt-2 text-muted-foreground">Loading history...</p>
+            <div className="flex flex-col items-center justify-center py-12">
+              <RefreshCw className="mx-auto h-8 w-8 animate-spin text-[var(--fg-muted)]" />
+              <p className="mt-2 text-[var(--fg-muted)]">Loading history...</p>
             </div>
           ) : records && records.length > 0 ? (
-            <div className="space-y-4">
+            <div className="divide-y divide-[var(--border)]">
               {records.map((record) => (
                 <div
                   key={record.id}
-                  className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+                  className="flex flex-col md:flex-row md:items-center justify-between p-4 sm:p-6 gap-4 hover:bg-[var(--bg-hover)] transition-colors"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      {typeIcons[record.type]}
+                  <div>
+                    <div className="font-medium text-[var(--fg)] flex items-center gap-2 flex-wrap">
+                      {typeLabels[record.type]}
+                      <Badge
+                        className="rounded-md text-xs font-medium border-0"
+                        style={{
+                          backgroundColor: statusConfig[record.status].bg,
+                          color: statusConfig[record.status].text,
+                        }}
+                      >
+                        {record.status}
+                      </Badge>
                     </div>
-                    <div>
-                      <div className="font-medium flex items-center gap-2">
-                        {formatType(record.type)}
-                        <Badge
-                          variant="secondary"
-                          className={`${statusConfig[record.status].color} flex items-center gap-1`}
-                        >
-                          {statusConfig[record.status].icon}
-                          {record.status}
-                        </Badge>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Asset: {record.asset.slice(0, 8)}...{record.asset.slice(-6)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatDate(record.createdAt)}
-                      </div>
+                    <div className="text-sm text-[var(--fg-muted)]">
+                      Asset: {record.asset.slice(0, 8)}...{record.asset.slice(-6)}
+                    </div>
+                    <div className="text-xs text-[var(--fg-muted)]">
+                      {formatDate(record.createdAt)}
                     </div>
                   </div>
-                  <div className="mt-4 md:mt-0 text-right">
-                    <div className="font-medium">
+                  <div className="flex flex-col md:items-end gap-1">
+                    <div className="font-semibold text-[var(--fg)] text-lg">
                       {formatAmount(record.amount, 8)}
                     </div>
                     {record.txid && (
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-[var(--fg-muted)]">
                         TX: {record.txid.slice(0, 8)}...{record.txid.slice(-6)}
                       </div>
                     )}
                     {record.error && (
-                      <div className="text-xs text-red-600 mt-1">
+                      <div className="text-xs text-[var(--danger)]">
                         Error: {record.error}
                       </div>
                     )}
@@ -182,8 +187,8 @@ export function HistoryPage() {
               ))}
 
               {/* Pagination */}
-              <div className="flex items-center justify-between pt-4 border-t">
-                <div className="text-sm text-muted-foreground">
+              <div className="flex items-center justify-between p-4 sm:p-6 border-t border-[var(--border)]">
+                <div className="text-sm text-[var(--fg-muted)]">
                   Showing {offset + 1} - {Math.min(offset + limit, meta?.total || 0)} of {meta?.total || 0}
                 </div>
                 <div className="flex gap-2">
@@ -192,8 +197,9 @@ export function HistoryPage() {
                     size="sm"
                     onClick={handlePrevPage}
                     disabled={offset === 0}
+                    className="rounded-lg gap-1"
                   >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    <ChevronLeft className="h-4 w-4" />
                     Previous
                   </Button>
                   <Button
@@ -201,18 +207,18 @@ export function HistoryPage() {
                     size="sm"
                     onClick={handleNextPage}
                     disabled={!meta?.hasMore}
+                    className="rounded-lg gap-1"
                   >
                     Next
-                    <ChevronRight className="h-4 w-4 ml-1" />
+                    <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <History className="mx-auto h-12 w-12 mb-4 opacity-50" />
-              <p>No transaction history found.</p>
-              <p className="text-sm">Your operations will appear here.</p>
+            <div className="flex flex-col items-center justify-center py-12 text-[var(--fg-muted)]">
+              <div className="text-lg font-medium text-[var(--fg)]">No transaction history found</div>
+              <p className="text-sm mt-1">Your operations will appear here</p>
             </div>
           )}
         </CardContent>

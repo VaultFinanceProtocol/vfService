@@ -10,20 +10,58 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@components/ui/Dialog";
-import { Alert, AlertDescription } from "@components/ui/Alert";
 import {
-  AlertTriangle,
   RefreshCw,
-  DollarSign,
-  TrendingDown,
-  User,
-  Activity,
   CheckCircle,
   Loader2,
 } from "lucide-react";
 import { useLiquidations, useLiquidationPreview } from "@hooks/useLiquidations";
 import { formatUSD, formatAmount } from "@utils/format";
 import type { LiquidatablePosition } from "@app-types";
+import { cn } from "@lib/utils";
+
+// Stat Card Component
+function StatCard({ 
+  title, 
+  value, 
+  subtitle, 
+  color = "primary",
+  delay = 0 
+}: { 
+  title: string;
+  value: React.ReactNode;
+  subtitle?: string;
+  color?: "primary" | "success" | "warning" | "danger";
+  delay?: number;
+}) {
+  const colorStyles = {
+    primary: { text: 'var(--primary)' },
+    success: { text: 'var(--success)' },
+    warning: { text: 'var(--warning)' },
+    danger: { text: 'var(--danger)' },
+  };
+
+  return (
+    <Card 
+      className="transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <CardContent className="pt-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-[var(--fg-muted)]">{title}</p>
+            <div className="mt-2 text-2xl font-bold" style={{ color: colorStyles[color].text }}>
+              {value}
+            </div>
+            {subtitle && (
+              <p className="text-xs text-[var(--fg-muted)] mt-1">{subtitle}</p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function LiquidationsPage() {
   const { positions, isLoading, refresh } = useLiquidations();
@@ -62,123 +100,121 @@ export function LiquidationsPage() {
   };
 
   const handleExecute = async () => {
-    // In a real implementation, this would create and broadcast the liquidation transaction
     setStep("success");
     refresh();
   };
 
   const healthFactorColor = (hf: string) => {
     const value = parseFloat(hf);
-    if (value < 0.9) return "text-red-600";
-    if (value < 1.0) return "text-orange-600";
-    return "text-green-600";
+    if (value < 0.9) return "text-[var(--danger)]";
+    if (value < 1.0) return "text-[var(--warning)]";
+    return "text-[var(--success)]";
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Liquidations</h2>
-          <p className="text-muted-foreground">
-            View and execute liquidation opportunities
-          </p>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--fg)]">
+            Liquidations
+          </h1>
+          <p className="text-[var(--fg-muted)] mt-1">View and execute liquidation opportunities</p>
         </div>
-        <Button variant="outline" onClick={() => refresh()} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+        <Button 
+          variant="outline" 
+          onClick={() => refresh()} 
+          disabled={isLoading}
+          className="rounded-lg gap-2"
+        >
+          <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           Refresh
         </Button>
       </div>
 
       {/* Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
-              <span className="text-sm text-muted-foreground">Positions at Risk</span>
-            </div>
-            <div className="text-2xl font-bold mt-2">
-              {positions?.filter((p) => parseFloat(p.healthFactor) < 0.9).length || 0}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-orange-500" />
-              <span className="text-sm text-muted-foreground">Liquidatable (HF &lt; 1.0)</span>
-            </div>
-            <div className="text-2xl font-bold mt-2">{positions?.length || 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-500" />
-              <span className="text-sm text-muted-foreground">Total Potential Profit</span>
-            </div>
-            <div className="text-2xl font-bold mt-2 text-green-600">
-              {formatUSD(
-                positions
-                  ?.reduce((sum, p) => sum + parseFloat(p.potentialProfitUSD), 0)
-                  .toString() || "0"
-              )}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard
+          title="Positions at Risk"
+          value={positions?.filter((p) => parseFloat(p.healthFactor) < 0.9).length || 0}
+          subtitle="Critical health factor"
+          color="danger"
+          delay={0}
+        />
+        <StatCard
+          title="Liquidatable"
+          value={positions?.length || 0}
+          subtitle="HF < 1.0"
+          color="warning"
+          delay={50}
+        />
+        <StatCard
+          title="Total Potential Profit"
+          value={formatUSD(
+            positions
+              ?.reduce((sum, p) => sum + parseFloat(p.potentialProfitUSD), 0)
+              .toString() || "0"
+          )}
+          subtitle="Liquidation bonuses"
+          color="success"
+          delay={100}
+        />
       </div>
 
       {/* Liquidations List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingDown className="h-5 w-5 text-red-600" />
-            Available Liquidations
-          </CardTitle>
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-[var(--border)]">
+          <CardTitle className="text-lg">Available Liquidations</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="text-center py-12">
-              <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
-              <p className="mt-2 text-muted-foreground">Scanning for liquidations...</p>
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="mx-auto h-8 w-8 animate-spin text-[var(--fg-muted)]" />
+              <p className="mt-2 text-[var(--fg-muted)]">Scanning for liquidations...</p>
             </div>
           ) : positions && positions.length > 0 ? (
-            <div className="space-y-4">
+            <div className="divide-y divide-[var(--border)]">
               {positions.map((position) => (
                 <div
                   key={position.userAddr}
-                  className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+                  className="flex flex-col md:flex-row md:items-center justify-between p-4 sm:p-6 gap-4 hover:bg-[var(--bg-hover)] transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-                      <User className="h-6 w-6 text-red-600" />
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: 'var(--danger-muted)' }}
+                    >
+                      <span className="text-lg font-bold text-[var(--danger)]">!</span>
                     </div>
                     <div>
-                      <div className="font-medium flex items-center gap-2">
+                      <div className="font-medium text-[var(--fg)]">
                         Borrower: {position.userAddr.slice(0, 8)}...
                         {position.userAddr.slice(-6)}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-[var(--fg-muted)]">
                         Debt: {formatUSD(position.borrowedValueUSD)} {position.symbol}
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-[var(--fg-muted)]">
                         Amount: {formatAmount(position.borrowedAmount, 8)} {position.symbol}
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4 md:mt-0 flex flex-col md:items-end gap-2">
+                  <div className="flex flex-col md:items-end gap-2">
                     <div className={`text-2xl font-bold ${healthFactorColor(position.healthFactor)}`}>
                       HF: {position.healthFactor}
                     </div>
-                    <div className="text-sm text-green-600 font-medium">
+                    <div className="text-sm font-semibold text-[var(--success)]">
                       Profit: {formatUSD(position.potentialProfitUSD)} (
                       {(position.liquidationBonus / 100).toFixed(0)}% bonus)
                     </div>
                     <Button
-                      variant="destructive"
                       size="sm"
                       onClick={() => handleOpenModal(position)}
-                      className="mt-2"
+                      className="mt-2 rounded-lg font-medium"
+                      style={{
+                        background: 'var(--gradient-danger)',
+                        color: 'white',
+                      }}
                     >
                       Liquidate
                     </Button>
@@ -187,10 +223,9 @@ export function LiquidationsPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <AlertTriangle className="mx-auto h-12 w-12 mb-4 opacity-50" />
-              <p>No liquidatable positions found.</p>
-              <p className="text-sm">All positions are healthy (HF &gt;= 1.0).</p>
+            <div className="flex flex-col items-center justify-center py-12 text-[var(--fg-muted)]">
+              <div className="text-lg font-medium text-[var(--fg)]">No liquidatable positions found</div>
+              <p className="text-sm mt-1">All positions are healthy (HF &gt;= 1.0)</p>
             </div>
           )}
         </CardContent>
@@ -198,59 +233,66 @@ export function LiquidationsPage() {
 
       {/* Liquidation Modal */}
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] rounded-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600">
-              <AlertTriangle className="h-5 w-5" />
-              Execute Liquidation
-            </DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-[var(--danger)]">Execute Liquidation</DialogTitle>
+            <DialogDescription className="text-[var(--fg-muted)]">
               Liquidate borrower position to earn liquidation bonus
             </DialogDescription>
           </DialogHeader>
 
           {step === "input" && selectedPosition && (
-            <div className="space-y-4">
-              <Alert className="bg-red-50 border-red-200">
-                <AlertDescription className="text-red-800">
-                  <div className="font-medium">Borrower at Risk</div>
-                  <div className="text-sm mt-1">
-                    Health Factor: {selectedPosition.healthFactor} (Below 1.0)
-                  </div>
-                </AlertDescription>
-              </Alert>
+            <div className="space-y-4 mt-4">
+              <div 
+                className="p-4 rounded-xl border"
+                style={{ 
+                  backgroundColor: 'var(--danger-bg)',
+                  borderColor: 'var(--danger-muted)',
+                }}
+              >
+                <p className="font-medium text-[var(--danger)]">Borrower at Risk</p>
+                <p className="text-sm text-[var(--danger)] mt-1">
+                  Health Factor: {selectedPosition.healthFactor} (Below 1.0)
+                </p>
+              </div>
 
               <div className="space-y-2">
-                <Label>Repay Amount ({selectedPosition.symbol})</Label>
+                <Label className="text-[var(--fg)]">Repay Amount ({selectedPosition.symbol})</Label>
                 <Input
                   type="number"
                   placeholder={`Enter ${selectedPosition.symbol} amount to repay`}
                   value={repayAmount}
                   onChange={(e) => setRepayAmount(e.target.value)}
+                  className="rounded-lg h-11"
                 />
-                <div className="text-sm text-muted-foreground">
+                <p className="text-xs text-[var(--fg-muted)]">
                   Available to repay: {formatAmount(selectedPosition.borrowedAmount, 8)}{" "}
                   {selectedPosition.symbol}
-                </div>
+                </p>
               </div>
 
               <div className="space-y-2">
-                <Label>Collateral Asset (to seize)</Label>
+                <Label className="text-[var(--fg)]">Collateral Asset (to seize)</Label>
                 <Input
                   type="text"
                   placeholder="Enter collateral asset ID"
                   value={collAsset}
                   onChange={(e) => setCollAsset(e.target.value)}
+                  className="rounded-lg h-11"
                 />
-                <div className="text-sm text-muted-foreground">
+                <p className="text-xs text-[var(--fg-muted)]">
                   Example: 0000000000000000000000000000000000000000000000000000000000000000 (BTC)
-                </div>
+                </p>
               </div>
 
               <Button
-                className="w-full"
+                className="w-full h-11 rounded-lg font-medium"
                 onClick={handleGetPreview}
                 disabled={!repayAmount || !collAsset || isPreviewLoading}
+                style={{
+                  background: 'var(--gradient-danger)',
+                  color: 'white',
+                }}
               >
                 {isPreviewLoading ? (
                   <>
@@ -265,31 +307,37 @@ export function LiquidationsPage() {
           )}
 
           {step === "preview" && preview && (
-            <div className="space-y-4">
-              <Alert className="bg-green-50 border-green-200">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
+            <div className="space-y-4 mt-4">
+              <div 
+                className="p-4 rounded-xl border"
+                style={{ 
+                  backgroundColor: 'var(--success-bg)',
+                  borderColor: 'var(--success-muted)',
+                }}
+              >
+                <p className="font-medium text-[var(--success)] flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
                   Liquidation is profitable!
-                </AlertDescription>
-              </Alert>
+                </p>
+              </div>
 
-              <div className="space-y-2 rounded-lg border p-4">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">You Repay</span>
-                  <span>
+              <div className="space-y-3 rounded-xl border border-[var(--border)] p-4 bg-[var(--bg-muted)]">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--fg-muted)]">You Repay</span>
+                  <span className="font-medium text-[var(--fg)]">
                     {formatAmount(preview.repayAmount, 8)} ({formatUSD(preview.repayValueUSD)})
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">You Receive (Collateral)</span>
-                  <span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--fg-muted)]">You Receive (Collateral)</span>
+                  <span className="font-medium text-[var(--fg)]">
                     {formatAmount(preview.seizeAmount, 8)} ({formatUSD(preview.seizeValueUSD)})
                   </span>
                 </div>
-                <div className="border-t my-2" />
-                <div className="flex justify-between font-medium text-green-600">
-                  <span>Your Profit (Bonus)</span>
-                  <span>
+                <div className="h-px bg-[var(--border)]" />
+                <div className="flex justify-between font-medium">
+                  <span className="text-[var(--success)]">Your Profit (Bonus)</span>
+                  <span className="text-[var(--success)]">
                     +{formatAmount(preview.bonusAmount, 8)} ({formatUSD(preview.bonusValueUSD)})
                   </span>
                 </div>
@@ -298,12 +346,19 @@ export function LiquidationsPage() {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  className="flex-1 rounded-lg h-11"
                   onClick={() => setStep("input")}
                 >
                   Back
                 </Button>
-                <Button className="flex-1" variant="destructive" onClick={handleExecute}>
+                <Button 
+                  className="flex-1 rounded-lg h-11 font-medium"
+                  onClick={handleExecute}
+                  style={{
+                    background: 'var(--gradient-danger)',
+                    color: 'white',
+                  }}
+                >
                   Execute Liquidation
                 </Button>
               </div>
@@ -311,19 +366,25 @@ export function LiquidationsPage() {
           )}
 
           {step === "success" && (
-            <div className="space-y-4 text-center">
+            <div className="space-y-4 mt-4 text-center">
               <div className="flex justify-center">
-                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--success-muted)' }}
+                >
+                  <CheckCircle className="w-8 h-8 text-[var(--success)]" />
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-medium">Liquidation Executed!</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="text-lg font-medium text-[var(--fg)]">Liquidation Executed!</h3>
+                <p className="text-sm text-[var(--fg-muted)] mt-1">
                   The transaction has been submitted to the network.
                 </p>
               </div>
-              <Button onClick={handleCloseModal} className="w-full">
+              <Button 
+                onClick={handleCloseModal} 
+                className="w-full rounded-lg h-11"
+              >
                 Close
               </Button>
             </div>

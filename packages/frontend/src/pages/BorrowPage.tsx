@@ -10,13 +10,71 @@ import { useHealthFactor } from "@hooks/usePositions";
 import { AmountDisplay } from "@components/protocol/amount-display";
 import { HealthFactorBadge } from "@components/protocol/health-factor-badge";
 import { QuotePanel, HealthFactorChange } from "@components/protocol/quote-panel";
-import {
-  LiquidationRiskBanner,
-} from "@components/protocol/risk-banner";
-import { TrendingDown, Wallet, Calculator, AlertTriangle } from "lucide-react";
+import { LiquidationRiskBanner } from "@components/protocol/risk-banner";
+import { Calculator, Wallet, Info } from "lucide-react";
 import { formatUSD, formatAPY } from "@utils/format";
+import { cn } from "@lib/utils";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";
+
+// Asset icon with gradient background
+function AssetIcon({ symbol, className }: { symbol: string; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "rounded-xl flex items-center justify-center font-bold text-white shadow-lg",
+        className
+      )}
+      style={{
+        background: 'var(--gradient-primary)',
+        boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
+      }}
+    >
+      {symbol.slice(0, 2)}
+    </div>
+  );
+}
+
+// Stat Card Component
+function StatCard({ 
+  title, 
+  value, 
+  subtitle, 
+  color = "primary",
+  delay = 0 
+}: { 
+  title: string;
+  value: React.ReactNode;
+  subtitle: string;
+  color?: "primary" | "success" | "warning" | "danger";
+  delay?: number;
+}) {
+  const colorStyles = {
+    primary: { text: 'var(--primary)' },
+    success: { text: 'var(--success)' },
+    warning: { text: 'var(--warning)' },
+    danger: { text: 'var(--danger)' },
+  };
+
+  return (
+    <Card 
+      className="transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-[var(--fg-muted)]">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold" style={{ color: colorStyles[color].text }}>
+          {value}
+        </div>
+        <p className="text-xs text-[var(--fg-muted)] mt-1">{subtitle}</p>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function BorrowPage() {
   const { pools, isLoading } = usePools(0, 100);
@@ -26,7 +84,6 @@ export function BorrowPage() {
   const [activeTab, setActiveTab] = useState("borrow");
 
   const borrowQuote = useQuote("borrow");
-
   const selectedPool = pools.find((p) => p.asset === selectedAsset);
 
   const handleGetQuote = async () => {
@@ -60,12 +117,14 @@ export function BorrowPage() {
   const hf = parseFloat(healthFactor || "999");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Borrow</h2>
-          <p style={{ color: "var(--fg-muted)" }}>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--fg)]">
+            Borrow
+          </h1>
+          <p className="text-[var(--fg-muted)] mt-1">
             Borrow assets using your supplied collateral
           </p>
         </div>
@@ -80,142 +139,82 @@ export function BorrowPage() {
       )}
 
       {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle
-              className="text-sm font-medium"
-              style={{ color: "var(--fg-muted)" }}
-            >
-              Total Borrowed
-            </CardTitle>
-            <Wallet
-              className="h-4 w-4"
-              style={{ color: "var(--fg-muted)" }}
-            />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold" style={{ color: "var(--fg)" }}>
-              {isLoading ? "..." : formatUSD(totalBorrowed)}
-            </div>
-            <p className="text-xs" style={{ color: "var(--fg-muted)" }}>
-              Across all borrowers
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle
-              className="text-sm font-medium"
-              style={{ color: "var(--fg-muted)" }}
-            >
-              Best Borrow Rate
-            </CardTitle>
-            <TrendingDown
-              className="h-4 w-4"
-              style={{ color: "var(--primary)" }}
-            />
-          </CardHeader>
-          <CardContent>
-            <div
-              className="text-2xl font-bold"
-              style={{ color: "var(--primary)" }}
-            >
-              {isLoading || !bestRatePool
-                ? "..."
-                : formatAPY(bestRatePool.borrowAPY)}
-            </div>
-            <p className="text-xs" style={{ color: "var(--fg-muted)" }}>
-              {bestRatePool?.symbol || ""}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle
-              className="text-sm font-medium"
-              style={{ color: "var(--fg-muted)" }}
-            >
-              Your Health Factor
-            </CardTitle>
-            <AlertTriangle
-              className="h-4 w-4"
-              style={{
-                color:
-                  hf >= 1.2
-                    ? "var(--success)"
-                    : hf >= 1.0
-                    ? "var(--warning)"
-                    : "var(--danger)",
-              }}
-            />
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <HealthFactorBadge value={healthFactor || "∞"} size="lg" />
-            </div>
-            <p className="text-xs mt-1" style={{ color: "var(--fg-muted)" }}>
-              {hf < 1.0
-                ? "At risk of liquidation!"
-                : hf < 1.2
-                ? "Low - Add collateral"
-                : "Healthy position"}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard
+          title="Total Borrowed"
+          value={isLoading ? "..." : formatUSD(totalBorrowed)}
+          subtitle="Across all borrowers"
+          delay={0}
+        />
+        <StatCard
+          title="Best Borrow Rate"
+          value={isLoading || !bestRatePool ? "..." : formatAPY(bestRatePool.borrowAPY)}
+          subtitle={bestRatePool?.symbol || ""}
+          color="primary"
+          delay={50}
+        />
+        <StatCard
+          title="Your Health Factor"
+          value={<HealthFactorBadge value={healthFactor || "∞"} size="lg" />}
+          subtitle={hf < 1.0 ? "At risk of liquidation!" : hf < 1.2 ? "Low - Add collateral" : "Healthy position"}
+          color={hf < 1.0 ? "danger" : hf < 1.2 ? "warning" : "success"}
+          delay={100}
+        />
       </div>
 
       {/* Main Action Area */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Borrow Form */}
-        <Card>
+        <Card className="overflow-hidden">
+          <div 
+            className="h-1"
+            style={{ background: 'var(--gradient-primary)' }}
+          />
           <CardHeader>
             <CardTitle>Borrow Assets</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="borrow">Borrow</TabsTrigger>
-                <TabsTrigger value="repay">Repay</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 rounded-lg bg-[var(--bg-muted)] p-1">
+                <TabsTrigger 
+                  value="borrow"
+                  className="rounded-md data-[state=active]:bg-[var(--card)] data-[state=active]:shadow-sm"
+                >
+                  Borrow
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="repay"
+                  className="rounded-md data-[state=active]:bg-[var(--card)] data-[state=active]:shadow-sm"
+                >
+                  Repay
+                </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="borrow" className="space-y-4">
+              <TabsContent value="borrow" className="space-y-6 mt-6">
                 {/* Asset Selection */}
-                <div className="space-y-2">
-                  <Label>Select Asset to Borrow</Label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {pools.slice(0, 6).map((pool) => (
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-[var(--fg)]">Select Asset to Borrow</Label>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {pools.slice(0, 8).map((pool) => (
                       <button
                         key={pool.asset}
                         onClick={() => setSelectedAsset(pool.asset)}
-                        className={`p-3 rounded-lg border transition-all ${
+                        className={cn(
+                          "p-3 rounded-xl border transition-all duration-200",
                           selectedAsset === pool.asset
                             ? "border-[var(--primary)] bg-[var(--primary-muted)]"
-                            : "border-[var(--border)] hover:bg-[var(--bg-hover)]"
-                        }`}
+                            : "border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-hover)]"
+                        )}
                       >
-                        <div className="flex flex-col items-center gap-1">
-                          <div
-                            className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs"
-                            style={{
-                              backgroundColor: "var(--primary-muted)",
-                              color: "var(--primary)",
-                            }}
-                          >
-                            {pool.symbol.slice(0, 2)}
-                          </div>
-                          <span
-                            className="text-sm font-medium"
-                            style={{ color: "var(--fg)" }}
-                          >
+                        <div className="flex flex-col items-center gap-2">
+                          <AssetIcon 
+                            symbol={pool.symbol} 
+                            className="w-8 h-8 text-xs"
+                          />
+                          <span className="text-sm font-medium text-[var(--fg)]">
                             {pool.symbol}
                           </span>
-                          <span
-                            className="text-xs"
-                            style={{ color: "var(--primary)" }}
-                          >
+                          <span className="text-xs font-semibold text-[var(--primary)]">
                             {formatAPY(pool.borrowAPY)}
                           </span>
                         </div>
@@ -225,39 +224,30 @@ export function BorrowPage() {
                 </div>
 
                 {/* Amount Input */}
-                <div className="space-y-2">
-                  <Label>Amount</Label>
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-[var(--fg)]">Amount</Label>
                   <div className="relative">
                     <Input
                       type="number"
                       placeholder="0.00"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="pr-16"
+                      className="h-12 pr-20 text-lg rounded-xl border-[var(--border)] focus:border-[var(--primary)]"
                     />
-                    <span
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium"
-                      style={{ color: "var(--fg-muted)" }}
-                    >
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--fg-muted)]">
                       {selectedPool?.symbol || "Token"}
                     </span>
                   </div>
                   {borrowQuote.quote?.computed?.maxBorrowAmount && (
-                    <div
-                      className="flex justify-between text-xs"
-                      style={{ color: "var(--fg-muted)" }}
-                    >
-                      <span>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-[var(--fg-muted)]">
                         Max Borrow:{" "}
                         <AmountDisplay
                           value={borrowQuote.quote.computed.maxBorrowAmount}
                           decimals={selectedPool?.decimals || 8}
                         />
                       </span>
-                      <button
-                        className="hover:underline"
-                        style={{ color: "var(--primary)" }}
-                      >
+                      <button className="font-medium text-[var(--primary)] hover:underline">
                         MAX
                       </button>
                     </div>
@@ -265,42 +255,48 @@ export function BorrowPage() {
                 </div>
 
                 {/* Info Box */}
-                <div
-                  className="p-3 rounded-lg text-sm"
-                  style={{
-                    backgroundColor: "var(--bg-elevated)",
-                    color: "var(--fg-muted)",
-                  }}
-                >
-                  <p>
-                    You need to supply collateral before borrowing. Your
-                    collateralization ratio determines your maximum borrow
-                    limit.
-                  </p>
+                <div className="p-4 rounded-xl bg-[var(--bg-muted)] border border-[var(--border)]">
+                  <div className="flex items-start gap-3">
+                    <Info className="h-5 w-5 text-[var(--fg-muted)] mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-[var(--fg)] font-medium mb-1">How Borrowing Works</p>
+                      <p className="text-xs text-[var(--fg-muted)]">
+                        You need to supply collateral before borrowing. Your collateralization 
+                        ratio determines your maximum borrow limit.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <Button
-                  className="w-full"
+                  className="w-full h-12 rounded-xl font-medium text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
                   onClick={handleGetQuote}
                   disabled={!amount || !selectedAsset || borrowQuote.isLoading}
                   style={{
-                    backgroundColor: "var(--primary)",
-                    color: "var(--primary-contrast)",
+                    background: 'var(--gradient-primary)',
+                    color: 'white',
+                    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
                   }}
                 >
                   {borrowQuote.isLoading ? "Calculating..." : "Preview Borrow"}
                 </Button>
               </TabsContent>
 
-              <TabsContent value="repay" className="space-y-4">
-                <div
-                  className="p-4 rounded-lg text-center"
-                  style={{
-                    backgroundColor: "var(--bg-elevated)",
-                    color: "var(--fg-muted)",
-                  }}
-                >
-                  Connect your wallet to view and repay your loans
+              <TabsContent value="repay" className="mt-6">
+                <div className="p-8 rounded-xl text-center bg-[var(--bg-muted)] border border-[var(--border)]">
+                  <Wallet className="h-12 w-12 mx-auto mb-4 text-[var(--fg-muted)] opacity-50" />
+                  <p className="text-[var(--fg-muted)]">
+                    Connect your wallet to view and repay your loans
+                  </p>
+                  <Button 
+                    className="mt-4 rounded-lg"
+                    style={{
+                      background: 'var(--gradient-primary)',
+                      color: 'white',
+                    }}
+                  >
+                    Connect Wallet
+                  </Button>
                 </div>
               </TabsContent>
             </Tabs>
@@ -357,11 +353,11 @@ export function BorrowPage() {
 
               {borrowQuote.quote.feasible && (
                 <Button
-                  className="w-full"
-                  size="lg"
+                  className="w-full h-12 rounded-xl font-medium text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
                   style={{
-                    backgroundColor: "var(--primary)",
-                    color: "var(--primary-contrast)",
+                    background: 'var(--gradient-primary)',
+                    color: 'white',
+                    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
                   }}
                 >
                   Confirm Borrow
@@ -369,15 +365,19 @@ export function BorrowPage() {
               )}
             </>
           ) : (
-            <Card>
-              <CardContent
-                className="p-8 text-center"
-                style={{ color: "var(--fg-muted)" }}
-              >
-                <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>
+            <Card className="h-full min-h-[300px] flex flex-col">
+              <CardHeader>
+                <CardTitle>Quote Preview</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                  style={{ backgroundColor: 'var(--bg-muted)' }}
+                >
+                  <Calculator className="h-8 w-8 text-[var(--fg-muted)] opacity-50" />
+                </div>
+                <p className="text-[var(--fg-muted)]">
                   Select an asset and enter amount to preview your borrow
-                  position
                 </p>
               </CardContent>
             </Card>
@@ -386,47 +386,28 @@ export function BorrowPage() {
       </div>
 
       {/* All Markets Table */}
-      <Card>
-        <CardHeader>
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-[var(--border)]">
           <CardTitle>All Borrow Markets</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr
-                  style={{
-                    borderBottom: "1px solid var(--border)",
-                  }}
-                >
-                  <th
-                    className="text-left py-3 px-4 font-medium"
-                    style={{ color: "var(--fg-muted)" }}
-                  >
+                <tr className="border-b border-[var(--border)]">
+                  <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
                     Asset
                   </th>
-                  <th
-                    className="text-right py-3 px-4 font-medium"
-                    style={{ color: "var(--fg-muted)" }}
-                  >
+                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
                     Available Liquidity
                   </th>
-                  <th
-                    className="text-right py-3 px-4 font-medium"
-                    style={{ color: "var(--fg-muted)" }}
-                  >
+                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
                     Borrow APY
                   </th>
-                  <th
-                    className="text-right py-3 px-4 font-medium"
-                    style={{ color: "var(--fg-muted)" }}
-                  >
+                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)] hidden sm:table-cell">
                     Variable APY
                   </th>
-                  <th
-                    className="text-center py-3 px-4 font-medium"
-                    style={{ color: "var(--fg-muted)" }}
-                  >
+                  <th className="text-center py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
                     Action
                   </th>
                 </tr>
@@ -435,59 +416,48 @@ export function BorrowPage() {
                 {pools.map((pool) => (
                   <tr
                     key={pool.asset}
-                    className="hover:bg-[var(--bg-hover)] transition-colors"
-                    style={{ borderBottom: "1px solid var(--border)" }}
+                    className="group border-b border-[var(--border)] transition-colors hover:bg-[var(--bg-hover)]"
                   >
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-4 sm:px-6">
                       <div className="flex items-center gap-3">
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
-                          style={{
-                            backgroundColor: "var(--primary-muted)",
-                            color: "var(--primary)",
-                          }}
-                        >
-                          {pool.symbol.slice(0, 2)}
-                        </div>
+                        <AssetIcon 
+                          symbol={pool.symbol} 
+                          className="w-10 h-10 text-sm"
+                        />
                         <div>
-                          <div
-                            className="font-medium"
-                            style={{ color: "var(--fg)" }}
-                          >
+                          <div className="font-semibold text-[var(--fg)]">
                             {pool.symbol}
                           </div>
-                          <div
-                            className="text-sm"
-                            style={{ color: "var(--fg-muted)" }}
-                          >
+                          <div className="text-sm text-[var(--fg-muted)] hidden sm:block">
                             {pool.name}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="text-right py-4 px-4">
+                    <td className="text-right py-4 px-4 sm:px-6">
                       <AmountDisplay
                         value={parseFloat(pool.liquidity) / 10 ** pool.decimals}
                         decimals={2}
                       />
                     </td>
-                    <td className="text-right py-4 px-4">
-                      <span style={{ color: "var(--primary)" }}>
+                    <td className="text-right py-4 px-4 sm:px-6">
+                      <span className="font-semibold text-[var(--primary)]">
                         {formatAPY(pool.borrowAPY)}
                       </span>
                     </td>
-                    <td className="text-right py-4 px-4">
-                      <span style={{ color: "var(--primary)" }}>
+                    <td className="text-right py-4 px-4 sm:px-6 hidden sm:table-cell">
+                      <span className="text-[var(--fg-muted)]">
                         {formatAPY(pool.borrowAPY)}
                       </span>
                     </td>
-                    <td className="text-center py-4 px-4">
+                    <td className="text-center py-4 px-4 sm:px-6">
                       <Button
                         size="sm"
                         onClick={() => setSelectedAsset(pool.asset)}
+                        className="rounded-lg font-medium transition-all hover:scale-105"
                         style={{
-                          backgroundColor: "var(--primary)",
-                          color: "var(--primary-contrast)",
+                          background: 'var(--gradient-primary)',
+                          color: 'white',
                         }}
                       >
                         Borrow
