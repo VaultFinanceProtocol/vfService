@@ -44,14 +44,28 @@
     --text-secondary: #A0A0A0;
     --text-tertiary: #6B6B6B;
     
-    /* Typography */
-    --text-xs: 0.75rem;
-    --text-sm: 0.8125rem;
-    --text-base: 0.9375rem;
-    --text-lg: 1.0625rem;
-    --text-xl: 1.25rem;
-    --text-2xl: 1.5rem;
-    --text-3xl: 2rem;
+    /* ============================================
+       Typography Scale - Proportional System
+       
+       Change --text-base to scale all fonts proportionally:
+       - 0.9375rem (15px) - current base
+       - 1rem (16px) - slightly larger
+       - 1.0625rem (17px) - large
+       ============================================ */
+    --text-base: 1rem;                /* 16px base - increased for better readability */
+    --text-scale-xs: 0.8;             /* xs = base × 0.8 */
+    --text-scale-sm: 0.867;           /* sm = base × 0.867 */
+    --text-scale-lg: 1.133;           /* lg = base × 1.133 */
+    --text-scale-xl: 1.333;           /* xl = base × 1.333 */
+    --text-scale-2xl: 1.6;            /* 2xl = base × 1.6 */
+    --text-scale-3xl: 2.133;           /* 3xl = base × 2.133 */
+    
+    --text-xs: calc(var(--text-base) * var(--text-scale-xs));
+    --text-sm: calc(var(--text-base) * var(--text-scale-sm));
+    --text-lg: calc(var(--text-base) * var(--text-scale-lg));
+    --text-xl: calc(var(--text-base) * var(--text-scale-xl));
+    --text-2xl: calc(var(--text-base) * var(--text-scale-2xl));
+    --text-3xl: calc(var(--text-base) * var(--text-scale-3xl));
     
     /* Spacing */
     --leading-tight: 1.25;

@@ -164,10 +164,7 @@ export function BorrowPage() {
       {/* Main Action Area */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Borrow Form */}
-        <Card className="overflow-hidden">
-          <div 
-            className="h-1 bg-brand"
-          />
+        <Card>
           <CardHeader>
             <CardTitle>Borrow Assets</CardTitle>
           </CardHeader>

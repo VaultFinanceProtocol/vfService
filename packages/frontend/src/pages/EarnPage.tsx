@@ -149,8 +149,7 @@ export function EarnPage() {
       {/* Main Action Area */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Supply Form */}
-        <Card className="overflow-hidden">
-          <div className="h-1 bg-buy" />
+        <Card>
           <CardHeader>
             <CardTitle>Supply Assets</CardTitle>
           </CardHeader>
