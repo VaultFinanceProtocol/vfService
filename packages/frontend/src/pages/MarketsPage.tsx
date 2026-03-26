@@ -21,7 +21,6 @@ function AssetIcon({ symbol, className }: { symbol: string; className?: string }
         className
       )}
       style={{
-        background: 'var(--gradient-primary)',
         boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
       }}
     >
@@ -58,28 +57,27 @@ function StatCard({
     >
       {gradient && (
         <div 
-          className="absolute top-0 left-0 right-0 h-1"
-          style={{ background: 'var(--gradient-primary)' }}
+          className="absolute top-0 left-0 right-0 h-1 bg-background-surface"
         />
       )}
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-[var(--fg-muted)]">
+        <CardTitle className="text-sm font-medium text-foreground-muted">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline gap-2">
-          <div className="text-2xl font-bold text-[var(--fg)]">{value}</div>
+          <div className="text-2xl font-bold text-foreground">{value}</div>
           {trend && (
             <span className={cn(
               "text-xs font-medium",
-              trend === 'up' ? "text-[var(--success)]" : "text-[var(--danger)]"
+              trend === 'up' ? "text-buy" : "text-sell"
             )}>
               {trend === 'up' ? '+' : '-'}{Math.floor(Math.random() * 10 + 1)}%
             </span>
           )}
         </div>
-        <p className="text-xs text-[var(--fg-muted)] mt-1">{subtitle}</p>
+        <p className="text-xs text-foreground-muted mt-1">{subtitle}</p>
       </CardContent>
     </Card>
   );
@@ -96,10 +94,10 @@ export function MarketsPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--fg)]">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             Markets
           </h1>
-          <p className="text-[var(--fg-muted)] mt-1">
+          <p className="text-foreground-muted mt-1">
             Browse all available lending markets and earn yields
           </p>
         </div>
@@ -137,19 +135,19 @@ export function MarketsPage() {
 
       {/* Markets Table */}
       <Card className="overflow-hidden">
-        <CardHeader className="border-b border-[var(--border)]">
+        <CardHeader className="border-b border-border">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">All Markets</CardTitle>
-            <div className="text-sm text-[var(--fg-muted)]">
+            <div className="text-sm text-foreground-muted">
               {pools.length} assets available
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex items-center justify-center py-16 text-[var(--fg-muted)]">
+            <div className="flex items-center justify-center py-16 text-foreground-muted">
               <div className="flex flex-col items-center gap-3">
-                <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin" />
                 <span className="text-sm">Loading markets...</span>
               </div>
             </div>
@@ -157,23 +155,23 @@ export function MarketsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[var(--border)]">
-                    <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
+                  <tr className="border-b border-border">
+                    <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
                       Asset
                     </th>
-                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)] hidden sm:table-cell">
+                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden sm:table-cell">
                       Total Supplied
                     </th>
-                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
+                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
                       Supply APY
                     </th>
-                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)] hidden md:table-cell">
+                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden md:table-cell">
                       Borrow APY
                     </th>
-                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)] hidden lg:table-cell">
+                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden lg:table-cell">
                       Liquidity
                     </th>
-                    <th className="text-center py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
+                    <th className="text-center py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
                       Action
                     </th>
                   </tr>
@@ -187,7 +185,7 @@ export function MarketsPage() {
                     return (
                       <tr 
                         key={pool.asset} 
-                        className="group border-b border-[var(--border)] transition-colors hover:bg-[var(--bg-hover)]"
+                        className="group border-b border-border transition-colors hover:bg-background-hover"
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <td className="py-4 px-4 sm:px-6">
@@ -197,40 +195,37 @@ export function MarketsPage() {
                               className="w-10 h-10 text-sm flex-shrink-0"
                             />
                             <div>
-                              <div className="font-semibold text-[var(--fg)] group-hover:text-[var(--primary)] transition-colors">
+                              <div className="font-semibold text-foreground group-hover:text-brand transition-colors">
                                 {pool.symbol}
                               </div>
-                              <div className="text-sm text-[var(--fg-muted)] hidden sm:block">
+                              <div className="text-sm text-foreground-muted hidden sm:block">
                                 {pool.name}
                               </div>
                             </div>
                           </Link>
                         </td>
                         <td className="text-right py-4 px-4 sm:px-6 hidden sm:table-cell">
-                          <div className="font-medium text-[var(--fg)]">{formatUSD(suppliedUSD)}</div>
+                          <div className="font-medium text-foreground">{formatUSD(suppliedUSD)}</div>
                         </td>
                         <td className="text-right py-4 px-4 sm:px-6">
-                          <span className="font-semibold text-[var(--success)]">
+                          <span className="font-semibold text-buy">
                             {formatAPY(pool.supplyAPY)}
                           </span>
                         </td>
                         <td className="text-right py-4 px-4 sm:px-6 hidden md:table-cell">
-                          <span className="font-medium text-[var(--warning)]">
+                          <span className="font-medium text-sell">
                             {formatAPY(pool.borrowAPY)}
                           </span>
                         </td>
                         <td className="text-right py-4 px-4 sm:px-6 hidden lg:table-cell">
-                          <div className="font-medium text-[var(--fg)]">{formatUSD(liquidityUSD)}</div>
+                          <div className="font-medium text-foreground">{formatUSD(liquidityUSD)}</div>
                         </td>
                         <td className="text-center py-4 px-4 sm:px-6">
                           <Link to={`/markets/${pool.asset}`}>
                             <Button 
                               size="sm" 
                               className="rounded-lg font-medium transition-all hover:scale-105"
-                              style={{
-                                background: 'var(--gradient-primary)',
-                                color: 'white',
-                              }}
+                              variant="primary"
                             >
                               View
                             </Button>
@@ -243,8 +238,8 @@ export function MarketsPage() {
               </table>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-[var(--fg-muted)]">
-              <div className="text-lg font-medium text-[var(--fg)]">No markets available</div>
+            <div className="flex flex-col items-center justify-center py-16 text-foreground-muted">
+              <div className="text-lg font-medium text-foreground">No markets available</div>
               <p className="text-sm mt-1">Check back later for new pools</p>
             </div>
           )}
@@ -255,17 +250,14 @@ export function MarketsPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="group overflow-hidden">
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-[var(--fg)] mb-1">Earn Yield</h3>
-            <p className="text-sm text-[var(--fg-muted)] mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-1">Earn Yield</h3>
+            <p className="text-sm text-foreground-muted mb-4">
               Supply assets to earn passive income
             </p>
             <Link to="/earn">
               <Button 
                 className="rounded-lg font-medium"
-                style={{
-                  background: 'var(--gradient-success)',
-                  color: 'white',
-                }}
+                variant="buy"
               >
                 Start Earning
               </Button>
@@ -275,17 +267,14 @@ export function MarketsPage() {
 
         <Card className="group overflow-hidden">
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-[var(--fg)] mb-1">Borrow Assets</h3>
-            <p className="text-sm text-[var(--fg-muted)] mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-1">Borrow Assets</h3>
+            <p className="text-sm text-foreground-muted mb-4">
               Use your collateral to borrow funds
             </p>
             <Link to="/borrow">
               <Button 
                 className="rounded-lg font-medium"
-                style={{
-                  background: 'var(--gradient-primary)',
-                  color: 'white',
-                }}
+                variant="primary"
               >
                 Borrow Now
               </Button>

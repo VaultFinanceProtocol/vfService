@@ -25,31 +25,31 @@ interface RiskBannerProps {
 const variantConfig = {
   info: {
     icon: Info,
-    bgColor: "var(--info-bg)",
-    borderColor: "var(--info)",
-    textColor: "var(--info)",
-    iconColor: "var(--info)",
+    bgClass: "bg-background-surface",
+    borderClass: "border-l-brand",
+    textClass: "text-brand",
+    iconClass: "text-brand",
   },
   warning: {
     icon: AlertTriangle,
-    bgColor: "var(--risk-warning-bg)",
-    borderColor: "var(--risk-warning)",
-    textColor: "var(--risk-warning)",
-    iconColor: "var(--risk-warning)",
+    bgClass: "bg-sell-light",
+    borderClass: "border-l-brand",
+    textClass: "text-brand",
+    iconClass: "text-brand",
   },
   danger: {
     icon: AlertCircle,
-    bgColor: "var(--risk-danger-bg)",
-    borderColor: "var(--risk-danger)",
-    textColor: "var(--risk-danger)",
-    iconColor: "var(--risk-danger)",
+    bgClass: "bg-sell-light",
+    borderClass: "border-l-sell",
+    textClass: "text-sell",
+    iconClass: "text-sell",
   },
   success: {
     icon: Shield,
-    bgColor: "var(--risk-safe-bg)",
-    borderColor: "var(--risk-safe)",
-    textColor: "var(--risk-safe)",
-    iconColor: "var(--risk-safe)",
+    bgClass: "bg-buy-light",
+    borderClass: "border-l-buy",
+    textClass: "text-buy",
+    iconClass: "text-buy",
   },
 };
 
@@ -70,31 +70,20 @@ export function RiskBanner({
     <div
       className={cn(
         "relative rounded-lg border-l-4 p-4",
+        config.bgClass,
+        config.borderClass,
         className
       )}
-      style={{
-        backgroundColor: config.bgColor,
-        borderLeftColor: config.borderColor,
-      }}
     >
       <div className="flex gap-3">
-        <Icon
-          className="h-5 w-5 flex-shrink-0 mt-0.5"
-          style={{ color: config.iconColor }}
-        />
+        <Icon className={cn("h-5 w-5 flex-shrink-0 mt-0.5", config.iconClass)} />
         <div className="flex-1 min-w-0">
           {title && (
-            <h4
-              className="font-semibold text-sm mb-1"
-              style={{ color: config.textColor }}
-            >
+            <h4 className={cn("font-semibold text-sm mb-1", config.textClass)}>
               {title}
             </h4>
           )}
-          <p
-            className="text-sm leading-relaxed"
-            style={{ color: config.textColor }}
-          >
+          <p className={cn("text-sm leading-relaxed", config.textClass)}>
             {message}
           </p>
           {details && details.length > 0 && (
@@ -102,8 +91,7 @@ export function RiskBanner({
               {details.map((detail, index) => (
                 <li
                   key={index}
-                  className="text-sm flex items-start gap-2"
-                  style={{ color: config.textColor }}
+                  className={cn("text-sm flex items-start gap-2", config.textClass)}
                 >
                   <span className="mt-1.5 w-1 h-1 rounded-full bg-current flex-shrink-0" />
                   <span className="opacity-90">{detail}</span>
@@ -114,8 +102,10 @@ export function RiskBanner({
           {action && (
             <button
               onClick={action.onClick}
-              className="mt-3 text-sm font-medium underline underline-offset-2 hover:opacity-80 transition-opacity"
-              style={{ color: config.textColor }}
+              className={cn(
+                "mt-3 text-sm font-medium underline underline-offset-2 hover:opacity-80 transition-opacity",
+                config.textClass
+              )}
             >
               {action.label}
             </button>
@@ -124,8 +114,10 @@ export function RiskBanner({
         {dismissible && onDismiss && (
           <button
             onClick={onDismiss}
-            className="flex-shrink-0 p-1 rounded hover:opacity-70 transition-opacity"
-            style={{ color: config.textColor }}
+            className={cn(
+              "flex-shrink-0 p-1 rounded hover:opacity-70 transition-opacity",
+              config.textClass
+            )}
           >
             <XCircle className="h-5 w-5" />
           </button>
@@ -262,13 +254,9 @@ export function GasEstimationBanner({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 px-3 py-2 rounded-md text-sm",
+        "flex items-center gap-2 px-3 py-2 rounded-md text-sm bg-background-elevated text-foreground-secondary",
         className
       )}
-      style={{
-        backgroundColor: "var(--bg-elevated)",
-        color: "var(--fg-muted)",
-      }}
     >
       <Flame className="h-4 w-4" />
       <span>
@@ -331,4 +319,3 @@ export function MarketStatusBanner({
     />
   );
 }
-

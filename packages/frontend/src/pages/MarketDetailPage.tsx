@@ -49,10 +49,10 @@ function StatCard({
   color?: "primary" | "success" | "warning";
   delay?: number;
 }) {
-  const colorStyles = {
-    primary: { text: 'var(--primary)' },
-    success: { text: 'var(--success)' },
-    warning: { text: 'var(--warning)' },
+  const colorClasses = {
+    primary: 'text-brand',
+    success: 'text-buy',
+    warning: 'text-sell',
   };
 
   return (
@@ -61,8 +61,8 @@ function StatCard({
       style={{ animationDelay: `${delay}ms` }}
     >
       <CardContent className="pt-6">
-        <div className="text-xs text-[var(--fg-muted)] uppercase tracking-wide mb-1">{title}</div>
-        <div className="text-2xl font-bold" style={{ color: colorStyles[color].text }}>
+        <div className="text-xs text-foreground-muted uppercase tracking-wide mb-1">{title}</div>
+        <div className={cn("text-2xl font-bold", colorClasses[color])}>
           {value}
         </div>
       </CardContent>
@@ -105,16 +105,16 @@ export function MarketDetailPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
-        <p className="mt-4 text-[var(--fg-muted)]">Loading market data...</p>
+        <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+        <p className="mt-4 text-foreground-muted">Loading market data...</p>
       </div>
     );
   }
 
   if (!pool) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-[var(--fg-muted)]">
-        <p className="text-lg font-medium text-[var(--fg)]">Pool not found</p>
+      <div className="flex flex-col items-center justify-center py-20 text-foreground-muted">
+        <p className="text-lg font-medium text-foreground">Pool not found</p>
         <Link to="/markets">
           <Button className="mt-4 rounded-lg" variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -139,7 +139,7 @@ export function MarketDetailPage() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-10 w-10 rounded-lg text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--bg-hover)]"
+            className="h-10 w-10 rounded-lg text-foreground-muted hover:text-foreground hover:bg-background-hover"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -148,10 +148,10 @@ export function MarketDetailPage() {
           <div className="flex items-center gap-3">
             <AssetIcon symbol={pool.symbol} className="w-12 h-12 text-base" />
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--fg)]">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                 {pool.symbol}
               </h1>
-              <p className="text-[var(--fg-muted)]">{pool.name}</p>
+              <p className="text-foreground-muted">{pool.name}</p>
             </div>
           </div>
         </div>
@@ -181,8 +181,8 @@ export function MarketDetailPage() {
           style={{ animationDelay: '150ms' }}
         >
           <CardContent className="pt-6">
-            <div className="text-xs text-[var(--fg-muted)] uppercase tracking-wide mb-1">Utilization</div>
-            <div className="text-2xl font-bold text-[var(--primary)]">
+            <div className="text-xs text-foreground-muted uppercase tracking-wide mb-1">Utilization</div>
+            <div className="text-2xl font-bold text-brand">
               {formatAPY(pool.utilization)}
             </div>
           </CardContent>
@@ -193,24 +193,26 @@ export function MarketDetailPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="overflow-hidden">
           <div 
-            className="h-1"
-            style={{ background: activeTab === "supply" ? 'var(--gradient-success)' : 'var(--gradient-primary)' }}
+            className={cn(
+              "h-1",
+              activeTab === "supply" ? "bg-buy" : "bg-brand"
+            )}
           />
           <CardHeader>
             <CardTitle>Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 rounded-lg bg-[var(--bg-muted)] p-1">
+              <TabsList className="grid w-full grid-cols-2 rounded-lg bg-background-surface p-1">
                 <TabsTrigger 
                   value="supply"
-                  className="rounded-md data-[state=active]:bg-[var(--card)] data-[state=active]:shadow-sm"
+                  className="rounded-md data-[state=active]:bg-background-elevated data-[state=active]:shadow-sm"
                 >
                   Supply
                 </TabsTrigger>
                 <TabsTrigger 
                   value="borrow"
-                  className="rounded-md data-[state=active]:bg-[var(--card)] data-[state=active]:shadow-sm"
+                  className="rounded-md data-[state=active]:bg-background-elevated data-[state=active]:shadow-sm"
                 >
                   Borrow
                 </TabsTrigger>
@@ -218,23 +220,23 @@ export function MarketDetailPage() {
 
               <TabsContent value="supply" className="space-y-4 mt-6">
                 <div className="space-y-2">
-                  <Label className="text-[var(--fg)]">Amount ({pool.symbol})</Label>
+                  <Label className="text-foreground">Amount ({pool.symbol})</Label>
                   <Input
                     type="number"
                     placeholder={`Enter ${pool.symbol} amount`}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="h-12 rounded-xl border-[var(--border)] focus:border-[var(--success)]"
+                    className="h-12 rounded-xl border-border focus:border-buy"
                   />
                 </div>
 
-                <div className="flex items-center space-x-2 p-4 rounded-xl bg-[var(--bg-muted)] border border-[var(--border)]">
+                <div className="flex items-center space-x-2 p-4 rounded-xl bg-background-surface border border-border">
                   <Switch
                     id="collateral"
                     checked={useAsCollateral}
                     onCheckedChange={setUseAsCollateral}
                   />
-                  <Label htmlFor="collateral" className="cursor-pointer text-[var(--fg)]">
+                  <Label htmlFor="collateral" className="cursor-pointer text-foreground">
                     Use as collateral
                   </Label>
                 </div>
@@ -255,13 +257,13 @@ export function MarketDetailPage() {
 
               <TabsContent value="borrow" className="space-y-4 mt-6">
                 <div className="space-y-2">
-                  <Label className="text-[var(--fg)]">Amount ({pool.symbol})</Label>
+                  <Label className="text-foreground">Amount ({pool.symbol})</Label>
                   <Input
                     type="number"
                     placeholder={`Enter ${pool.symbol} amount`}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="h-12 rounded-xl border-[var(--border)] focus:border-[var(--primary)]"
+                    className="h-12 rounded-xl border-border focus:border-brand"
                   />
                 </div>
 
@@ -289,25 +291,21 @@ export function MarketDetailPage() {
           </CardHeader>
           <CardContent>
             {isQuoteLoading ? (
-              <div className="flex flex-col items-center justify-center py-8 text-[var(--fg-muted)]">
-                <div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-3" />
+              <div className="flex flex-col items-center justify-center py-8 text-foreground-muted">
+                <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin mb-3" />
                 <p>Calculating...</p>
               </div>
             ) : currentQuote ? (
               <div className="space-y-4">
                 {!currentQuote.feasible ? (
                   <div 
-                    className="p-4 rounded-xl border"
-                    style={{ 
-                      backgroundColor: 'var(--danger-bg)',
-                      borderColor: 'var(--danger-muted)',
-                    }}
+                    className="p-4 rounded-xl border bg-sell-light border-border-subtle"
                   >
-                    <div className="flex items-center gap-2 text-[var(--danger)] font-medium">
+                    <div className="flex items-center gap-2 text-sell font-medium">
                       <AlertTriangle className="h-5 w-5" />
                       Not Feasible
                     </div>
-                    <ul className="mt-2 text-sm text-[var(--danger)] list-disc list-inside">
+                    <ul className="mt-2 text-sm text-sell list-disc list-inside">
                       {currentQuote.reasons?.map((reason, i) => (
                         <li key={i}>{reason}</li>
                       ))}
@@ -316,36 +314,32 @@ export function MarketDetailPage() {
                 ) : (
                   <>
                     <div 
-                      className="p-4 rounded-xl border"
-                      style={{ 
-                        backgroundColor: 'var(--success-bg)',
-                        borderColor: 'var(--success-muted)',
-                      }}
+                      className="p-4 rounded-xl border bg-buy-light border-border-subtle"
                     >
-                      <div className="flex items-center gap-2 text-[var(--success)] font-medium">
+                      <div className="flex items-center gap-2 text-buy font-medium">
                         <CheckCircle className="h-5 w-5" />
                         Feasible
                       </div>
                     </div>
 
-                    <div className="space-y-3 rounded-xl border border-[var(--border)] p-4 bg-[var(--bg-muted)]">
+                    <div className="space-y-3 rounded-xl border border-border p-4 bg-background-surface">
                       {currentQuote.computed.expectedAPY && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-[var(--fg-muted)]">Expected APY</span>
-                          <span className="font-medium text-[var(--fg)]">{formatAPY(currentQuote.computed.expectedAPY)}</span>
+                          <span className="text-foreground-muted">Expected APY</span>
+                          <span className="font-medium text-foreground">{formatAPY(currentQuote.computed.expectedAPY)}</span>
                         </div>
                       )}
 
                       {currentQuote.computed.healthFactorBefore && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-[var(--fg-muted)]">Health Factor (Before)</span>
-                          <span className="font-medium text-[var(--fg)]">{currentQuote.computed.healthFactorBefore}</span>
+                          <span className="text-foreground-muted">Health Factor (Before)</span>
+                          <span className="font-medium text-foreground">{currentQuote.computed.healthFactorBefore}</span>
                         </div>
                       )}
 
                       {currentQuote.computed.healthFactorAfter && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-[var(--fg-muted)]">Health Factor (After)</span>
+                          <span className="text-foreground-muted">Health Factor (After)</span>
                           <span className={formatHealthFactor(currentQuote.computed.healthFactorAfter).color}>
                             {currentQuote.computed.healthFactorAfter}
                           </span>
@@ -354,20 +348,20 @@ export function MarketDetailPage() {
 
                       {currentQuote.computed.maxBorrowAmount && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-[var(--fg-muted)]">Max Borrow</span>
-                          <span className="font-medium text-[var(--fg)]">{formatAmount(currentQuote.computed.maxBorrowAmount, pool.decimals)} {pool.symbol}</span>
+                          <span className="text-foreground-muted">Max Borrow</span>
+                          <span className="font-medium text-foreground">{formatAmount(currentQuote.computed.maxBorrowAmount, pool.decimals)} {pool.symbol}</span>
                         </div>
                       )}
 
                       {currentQuote.txPlan && (
                         <>
-                          <div className="h-px bg-[var(--border)]" />
+                          <div className="h-px bg-border" />
                           <div className="flex justify-between text-sm">
-                            <span className="text-[var(--fg-muted)]">Estimated Fee</span>
-                            <span className="font-medium text-[var(--fg)]">{currentQuote.txPlan.estimatedFee} sats</span>
+                            <span className="text-foreground-muted">Estimated Fee</span>
+                            <span className="font-medium text-foreground">{currentQuote.txPlan.estimatedFee} sats</span>
                           </div>
                           {currentQuote.txPlan.requiresCreateOp && (
-                            <div className="text-xs text-[var(--fg-muted)]">
+                            <div className="text-xs text-foreground-muted">
                               * Requires CreateOp backtrace
                             </div>
                           )}
@@ -377,14 +371,10 @@ export function MarketDetailPage() {
 
                     {currentQuote.warnings && currentQuote.warnings.length > 0 && (
                       <div 
-                        className="p-3 rounded-xl border"
-                        style={{ 
-                          backgroundColor: 'var(--warning-bg)',
-                          borderColor: 'var(--warning-muted)',
-                        }}
+                        className="p-3 rounded-xl border bg-brand-light border-border-subtle"
                       >
-                        <div className="text-sm font-medium text-[var(--warning)] mb-1">Warnings:</div>
-                        <ul className="text-sm text-[var(--warning)] list-disc list-inside">
+                        <div className="text-sm font-medium text-brand mb-1">Warnings:</div>
+                        <ul className="text-sm text-brand list-disc list-inside">
                           {currentQuote.warnings.map((warning, i) => (
                             <li key={i}>{warning}</li>
                           ))}
@@ -402,10 +392,9 @@ export function MarketDetailPage() {
                 )}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-[var(--fg-muted)]">
+              <div className="flex flex-col items-center justify-center py-8 text-foreground-muted">
                 <div 
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: 'var(--bg-muted)' }}
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-background-surface"
                 >
                   <Calculator className="h-8 w-8 opacity-50" />
                 </div>
@@ -418,25 +407,25 @@ export function MarketDetailPage() {
 
       {/* Risk Parameters */}
       <Card>
-        <CardHeader className="border-b border-[var(--border)]">
+        <CardHeader className="border-b border-border">
           <CardTitle>Risk Parameters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="p-4 rounded-xl bg-[var(--bg-muted)]">
-              <div className="text-sm text-[var(--fg-muted)] mb-1">LTV</div>
-              <div className="text-xl font-bold text-[var(--fg)]">{formatLTV(pool.ltv)}</div>
-              <div className="text-xs text-[var(--fg-muted)] mt-1">Loan-to-Value ratio</div>
+            <div className="p-4 rounded-xl bg-background-surface">
+              <div className="text-sm text-foreground-muted mb-1">LTV</div>
+              <div className="text-xl font-bold text-foreground">{formatLTV(pool.ltv)}</div>
+              <div className="text-xs text-foreground-muted mt-1">Loan-to-Value ratio</div>
             </div>
-            <div className="p-4 rounded-xl bg-[var(--bg-muted)]">
-              <div className="text-sm text-[var(--fg-muted)] mb-1">Liquidation Threshold</div>
-              <div className="text-xl font-bold text-[var(--fg)]">{formatLTV(pool.liquidationThreshold)}</div>
-              <div className="text-xs text-[var(--fg-muted)] mt-1">When liquidation starts</div>
+            <div className="p-4 rounded-xl bg-background-surface">
+              <div className="text-sm text-foreground-muted mb-1">Liquidation Threshold</div>
+              <div className="text-xl font-bold text-foreground">{formatLTV(pool.liquidationThreshold)}</div>
+              <div className="text-xs text-foreground-muted mt-1">When liquidation starts</div>
             </div>
-            <div className="p-4 rounded-xl bg-[var(--bg-muted)]">
-              <div className="text-sm text-[var(--fg-muted)] mb-1">Liquidation Bonus</div>
-              <div className="text-xl font-bold text-[var(--fg)]">{(pool.liquidationBonus / 100).toFixed(0)}%</div>
-              <div className="text-xs text-[var(--fg-muted)] mt-1">Bonus for liquidators</div>
+            <div className="p-4 rounded-xl bg-background-surface">
+              <div className="text-sm text-foreground-muted mb-1">Liquidation Bonus</div>
+              <div className="text-xl font-bold text-foreground">{(pool.liquidationBonus / 100).toFixed(0)}%</div>
+              <div className="text-xs text-foreground-muted mt-1">Bonus for liquidators</div>
             </div>
           </div>
         </CardContent>

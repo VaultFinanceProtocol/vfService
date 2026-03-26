@@ -41,7 +41,7 @@ export function Header() {
                 <h1 className="text-lg font-bold tracking-tight text-foreground">
                   VaultFinance
                 </h1>
-                <p className="text-[10px] -mt-0.5 font-medium text-foreground-secondary">
+                <p className="text-2xs -mt-0.5 font-medium text-foreground-secondary">
                   DeFi Lending Protocol
                 </p>
               </div>
@@ -145,7 +145,7 @@ export function Header() {
                   active ? 'text-primary' : 'text-foreground-secondary'
                 )}
               >
-                <span className="text-[11px] font-medium">{item.label}</span>
+                <span className="text-xs font-medium">{item.label}</span>
               </Link>
             );
           })}

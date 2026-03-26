@@ -22,11 +22,10 @@ function AssetIcon({ symbol, className }: { symbol: string; className?: string }
   return (
     <div
       className={cn(
-        "rounded-xl flex items-center justify-center font-bold text-white shadow-lg",
+        "rounded-xl flex items-center justify-center font-bold text-white shadow-lg bg-brand",
         className
       )}
       style={{
-        background: 'var(--gradient-primary)',
         boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
       }}
     >
@@ -49,11 +48,11 @@ function StatCard({
   color?: "primary" | "success" | "warning" | "danger";
   delay?: number;
 }) {
-  const colorStyles = {
-    primary: { text: 'var(--primary)' },
-    success: { text: 'var(--success)' },
-    warning: { text: 'var(--warning)' },
-    danger: { text: 'var(--danger)' },
+  const colorClasses = {
+    primary: "text-brand",
+    success: "text-buy",
+    warning: "text-sell",
+    danger: "text-sell",
   };
 
   return (
@@ -62,15 +61,15 @@ function StatCard({
       style={{ animationDelay: `${delay}ms` }}
     >
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-[var(--fg-muted)]">
+        <CardTitle className="text-sm font-medium text-foreground-muted">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold" style={{ color: colorStyles[color].text }}>
+        <div className={cn("text-2xl font-bold", colorClasses[color])}>
           {value}
         </div>
-        <p className="text-xs text-[var(--fg-muted)] mt-1">{subtitle}</p>
+        <p className="text-xs text-foreground-muted mt-1">{subtitle}</p>
       </CardContent>
     </Card>
   );
@@ -121,10 +120,10 @@ export function BorrowPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--fg)]">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             Borrow
           </h1>
-          <p className="text-[var(--fg-muted)] mt-1">
+          <p className="text-foreground-muted mt-1">
             Borrow assets using your supplied collateral
           </p>
         </div>
@@ -167,24 +166,23 @@ export function BorrowPage() {
         {/* Borrow Form */}
         <Card className="overflow-hidden">
           <div 
-            className="h-1"
-            style={{ background: 'var(--gradient-primary)' }}
+            className="h-1 bg-brand"
           />
           <CardHeader>
             <CardTitle>Borrow Assets</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 rounded-lg bg-[var(--bg-muted)] p-1">
+              <TabsList className="grid w-full grid-cols-2 rounded-lg bg-background-surface p-1">
                 <TabsTrigger 
                   value="borrow"
-                  className="rounded-md data-[state=active]:bg-[var(--card)] data-[state=active]:shadow-sm"
+                  className="rounded-md data-[state=active]:bg-background-elevated data-[state=active]:shadow-sm"
                 >
                   Borrow
                 </TabsTrigger>
                 <TabsTrigger 
                   value="repay"
-                  className="rounded-md data-[state=active]:bg-[var(--card)] data-[state=active]:shadow-sm"
+                  className="rounded-md data-[state=active]:bg-background-elevated data-[state=active]:shadow-sm"
                 >
                   Repay
                 </TabsTrigger>
@@ -193,7 +191,7 @@ export function BorrowPage() {
               <TabsContent value="borrow" className="space-y-6 mt-6">
                 {/* Asset Selection */}
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-[var(--fg)]">Select Asset to Borrow</Label>
+                  <Label className="text-sm font-medium text-foreground">Select Asset to Borrow</Label>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {pools.slice(0, 8).map((pool) => (
                       <button
@@ -202,8 +200,8 @@ export function BorrowPage() {
                         className={cn(
                           "p-3 rounded-xl border transition-all duration-200",
                           selectedAsset === pool.asset
-                            ? "border-[var(--primary)] bg-[var(--primary-muted)]"
-                            : "border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-hover)]"
+                            ? "border-brand bg-brand-light"
+                            : "border-border hover:border-border-strong hover:bg-background-hover"
                         )}
                       >
                         <div className="flex flex-col items-center gap-2">
@@ -211,10 +209,10 @@ export function BorrowPage() {
                             symbol={pool.symbol} 
                             className="w-8 h-8 text-xs"
                           />
-                          <span className="text-sm font-medium text-[var(--fg)]">
+                          <span className="text-sm font-medium text-foreground">
                             {pool.symbol}
                           </span>
-                          <span className="text-xs font-semibold text-[var(--primary)]">
+                          <span className="text-xs font-semibold text-brand">
                             {formatAPY(pool.borrowAPY)}
                           </span>
                         </div>
@@ -225,29 +223,29 @@ export function BorrowPage() {
 
                 {/* Amount Input */}
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-[var(--fg)]">Amount</Label>
+                  <Label className="text-sm font-medium text-foreground">Amount</Label>
                   <div className="relative">
                     <Input
                       type="number"
                       placeholder="0.00"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="h-12 pr-20 text-lg rounded-xl border-[var(--border)] focus:border-[var(--primary)]"
+                      className="h-12 pr-20 text-lg rounded-xl border-border focus:border-brand"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--fg-muted)]">
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-foreground-muted">
                       {selectedPool?.symbol || "Token"}
                     </span>
                   </div>
                   {borrowQuote.quote?.computed?.maxBorrowAmount && (
                     <div className="flex justify-between text-xs">
-                      <span className="text-[var(--fg-muted)]">
+                      <span className="text-foreground-muted">
                         Max Borrow:{" "}
                         <AmountDisplay
                           value={borrowQuote.quote.computed.maxBorrowAmount}
                           decimals={selectedPool?.decimals || 8}
                         />
                       </span>
-                      <button className="font-medium text-[var(--primary)] hover:underline">
+                      <button className="font-medium text-brand hover:underline">
                         MAX
                       </button>
                     </div>
@@ -255,12 +253,12 @@ export function BorrowPage() {
                 </div>
 
                 {/* Info Box */}
-                <div className="p-4 rounded-xl bg-[var(--bg-muted)] border border-[var(--border)]">
+                <div className="p-4 rounded-xl bg-background-surface border border-border">
                   <div className="flex items-start gap-3">
-                    <Info className="h-5 w-5 text-[var(--fg-muted)] mt-0.5 flex-shrink-0" />
+                    <Info className="h-5 w-5 text-foreground-muted mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-[var(--fg)] font-medium mb-1">How Borrowing Works</p>
-                      <p className="text-xs text-[var(--fg-muted)]">
+                      <p className="text-sm text-foreground font-medium mb-1">How Borrowing Works</p>
+                      <p className="text-xs text-foreground-muted">
                         You need to supply collateral before borrowing. Your collateralization 
                         ratio determines your maximum borrow limit.
                       </p>
@@ -269,12 +267,10 @@ export function BorrowPage() {
                 </div>
 
                 <Button
-                  className="w-full h-12 rounded-xl font-medium text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full h-12 rounded-xl font-medium text-base transition-all hover:scale-[1.02] active:scale-[0.98] bg-brand text-white"
                   onClick={handleGetQuote}
                   disabled={!amount || !selectedAsset || borrowQuote.isLoading}
                   style={{
-                    background: 'var(--gradient-primary)',
-                    color: 'white',
                     boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
                   }}
                 >
@@ -283,17 +279,13 @@ export function BorrowPage() {
               </TabsContent>
 
               <TabsContent value="repay" className="mt-6">
-                <div className="p-8 rounded-xl text-center bg-[var(--bg-muted)] border border-[var(--border)]">
-                  <Wallet className="h-12 w-12 mx-auto mb-4 text-[var(--fg-muted)] opacity-50" />
-                  <p className="text-[var(--fg-muted)]">
+                <div className="p-8 rounded-xl text-center bg-background-surface border border-border">
+                  <Wallet className="h-12 w-12 mx-auto mb-4 text-foreground-muted opacity-50" />
+                  <p className="text-foreground-muted">
                     Connect your wallet to view and repay your loans
                   </p>
                   <Button 
-                    className="mt-4 rounded-lg"
-                    style={{
-                      background: 'var(--gradient-primary)',
-                      color: 'white',
-                    }}
+                    className="mt-4 rounded-lg bg-brand text-white"
                   >
                     Connect Wallet
                   </Button>
@@ -353,10 +345,8 @@ export function BorrowPage() {
 
               {borrowQuote.quote.feasible && (
                 <Button
-                  className="w-full h-12 rounded-xl font-medium text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full h-12 rounded-xl font-medium text-base transition-all hover:scale-[1.02] active:scale-[0.98] bg-brand text-white"
                   style={{
-                    background: 'var(--gradient-primary)',
-                    color: 'white',
                     boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
                   }}
                 >
@@ -371,12 +361,11 @@ export function BorrowPage() {
               </CardHeader>
               <CardContent className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                 <div 
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: 'var(--bg-muted)' }}
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-background-surface"
                 >
-                  <Calculator className="h-8 w-8 text-[var(--fg-muted)] opacity-50" />
+                  <Calculator className="h-8 w-8 text-foreground-muted opacity-50" />
                 </div>
-                <p className="text-[var(--fg-muted)]">
+                <p className="text-foreground-muted">
                   Select an asset and enter amount to preview your borrow
                 </p>
               </CardContent>
@@ -387,27 +376,27 @@ export function BorrowPage() {
 
       {/* All Markets Table */}
       <Card className="overflow-hidden">
-        <CardHeader className="border-b border-[var(--border)]">
+        <CardHeader className="border-b border-border">
           <CardTitle>All Borrow Markets</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[var(--border)]">
-                  <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
+                <tr className="border-b border-border">
+                  <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
                     Asset
                   </th>
-                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
+                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
                     Available Liquidity
                   </th>
-                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
+                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
                     Borrow APY
                   </th>
-                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)] hidden sm:table-cell">
+                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden sm:table-cell">
                     Variable APY
                   </th>
-                  <th className="text-center py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-[var(--fg-muted)]">
+                  <th className="text-center py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
                     Action
                   </th>
                 </tr>
@@ -416,7 +405,7 @@ export function BorrowPage() {
                 {pools.map((pool) => (
                   <tr
                     key={pool.asset}
-                    className="group border-b border-[var(--border)] transition-colors hover:bg-[var(--bg-hover)]"
+                    className="group border-b border-border transition-colors hover:bg-background-hover"
                   >
                     <td className="py-4 px-4 sm:px-6">
                       <div className="flex items-center gap-3">
@@ -425,10 +414,10 @@ export function BorrowPage() {
                           className="w-10 h-10 text-sm"
                         />
                         <div>
-                          <div className="font-semibold text-[var(--fg)]">
+                          <div className="font-semibold text-foreground">
                             {pool.symbol}
                           </div>
-                          <div className="text-sm text-[var(--fg-muted)] hidden sm:block">
+                          <div className="text-sm text-foreground-muted hidden sm:block">
                             {pool.name}
                           </div>
                         </div>
@@ -441,12 +430,12 @@ export function BorrowPage() {
                       />
                     </td>
                     <td className="text-right py-4 px-4 sm:px-6">
-                      <span className="font-semibold text-[var(--primary)]">
+                      <span className="font-semibold text-brand">
                         {formatAPY(pool.borrowAPY)}
                       </span>
                     </td>
                     <td className="text-right py-4 px-4 sm:px-6 hidden sm:table-cell">
-                      <span className="text-[var(--fg-muted)]">
+                      <span className="text-foreground-muted">
                         {formatAPY(pool.borrowAPY)}
                       </span>
                     </td>
@@ -454,11 +443,7 @@ export function BorrowPage() {
                       <Button
                         size="sm"
                         onClick={() => setSelectedAsset(pool.asset)}
-                        className="rounded-lg font-medium transition-all hover:scale-105"
-                        style={{
-                          background: 'var(--gradient-primary)',
-                          color: 'white',
-                        }}
+                        className="rounded-lg font-medium transition-all hover:scale-105 bg-brand text-white"
                       >
                         Borrow
                       </Button>
