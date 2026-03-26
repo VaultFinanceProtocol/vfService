@@ -30,11 +30,12 @@
     
     /* Dark Theme (Default) - OKX Style */
     --bg-primary: #121212;
-    --bg-secondary: #000000;
-    --bg-tertiary: #1A1A1A;
-    --bg-hover: #2E2E2E;
-    --bg-active: #3C3C3C;
+    --bg-secondary: #1A1A1A;
+    --bg-tertiary: #2E2E2E;
+    --bg-hover: #3C3C3C;
+    --bg-active: #4A4A4A;
     --bg-input: #1A1A1A;
+    --bg-muted: #1A1A1A;
     --bg-card: #000000;
     --bg-tooltip: #2E2E2E;
     
@@ -94,14 +95,15 @@
   }
 
   [data-theme='light'] {
-    --bg-primary: #EBEBEB;
+    --bg-primary: #F8F9FA;
     --bg-secondary: #FFFFFF;
-    --bg-tertiary: #F5F5F5;
-    --bg-hover: #F5F5F5;
-    --bg-active: #EBEBEB;
+    --bg-tertiary: #F1F3F4;
+    --bg-hover: #E8EAED;
+    --bg-active: #DADCE0;
     --bg-input: #FFFFFF;
+    --bg-muted: #F1F3F4;
     --bg-card: #FFFFFF;
-    --bg-tooltip: #474D57;
+    --bg-tooltip: #5F6368;
     
     --border-primary: #EBEBEB;
     --border-secondary: #F0F0F0;
