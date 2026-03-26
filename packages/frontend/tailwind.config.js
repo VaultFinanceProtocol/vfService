@@ -25,52 +25,38 @@ module.exports = {
     },
     extend: {
       /* ============================================
-         Colors - Semantic Mapping
-         All colors map to CSS variables
+         Colors - Refined Palette
          ============================================ */
       colors: {
-        // Background Hierarchy
+        // Background
         background: {
           DEFAULT: 'var(--bg-page)',
           page: 'var(--bg-page)',
           surface: 'var(--bg-surface)',
           elevated: 'var(--bg-elevated)',
-          overlay: 'var(--bg-overlay)',
-          input: 'var(--bg-input)',
-          tooltip: 'var(--bg-tooltip)',
-          // Legacy aliases
-          primary: 'var(--bg-page)',
-          secondary: 'var(--bg-surface)',
-          tertiary: 'var(--bg-elevated)',
-          muted: 'var(--bg-muted)',
           hover: 'var(--bg-hover)',
           active: 'var(--bg-active)',
-          card: 'var(--bg-card)',
+          input: 'var(--bg-input)',
         },
         
-        // Text Hierarchy  
+        // Foreground (Typography)
         foreground: {
           DEFAULT: 'var(--text-primary)',
           primary: 'var(--text-primary)',
           secondary: 'var(--text-secondary)',
           tertiary: 'var(--text-tertiary)',
-          muted: 'var(--text-muted)',
-          disabled: 'var(--text-disabled)',
         },
         
-        // Border Hierarchy
+        // Border
         border: {
           DEFAULT: 'var(--border-default)',
           default: 'var(--border-default)',
           subtle: 'var(--border-subtle)',
           strong: 'var(--border-strong)',
           hover: 'var(--border-hover)',
-          // Legacy aliases
-          primary: 'var(--border-default)',
-          secondary: 'var(--border-subtle)',
         },
         
-        // Brand Colors
+        // Brand (Pink)
         brand: {
           DEFAULT: 'var(--brand)',
           hover: 'var(--brand-hover)',
@@ -78,7 +64,7 @@ module.exports = {
           dark: 'var(--brand-dark)',
         },
         
-        // Primary (alias for brand, shadcn/ui compatibility)
+        // Primary (alias)
         primary: {
           DEFAULT: 'var(--primary)',
           hover: 'var(--primary-hover)',
@@ -86,53 +72,19 @@ module.exports = {
           foreground: 'var(--primary-foreground)',
         },
         
-        // Trading Colors
+        // Trading
         buy: {
           DEFAULT: 'var(--color-buy)',
           hover: 'var(--color-buy-hover)',
           light: 'var(--color-buy-light)',
-          bg: 'var(--color-buy-bg)',
         },
         sell: {
           DEFAULT: 'var(--color-sell)',
           hover: 'var(--color-sell-hover)',
           light: 'var(--color-sell-light)',
-          bg: 'var(--color-sell-bg)',
         },
         
-        // Feedback Colors
-        success: {
-          DEFAULT: 'var(--color-success)',
-          hover: 'var(--color-success-hover)',
-          light: 'var(--color-success-light)',
-        },
-        danger: {
-          DEFAULT: 'var(--color-danger)',
-          hover: 'var(--color-danger-hover)',
-          light: 'var(--color-danger-light)',
-        },
-        warning: {
-          DEFAULT: 'var(--color-warning)',
-          hover: 'var(--color-warning-hover)',
-          light: 'var(--color-warning-light)',
-        },
-        info: {
-          DEFAULT: 'var(--color-info)',
-          hover: 'var(--color-info-hover)',
-          light: 'var(--color-info-light)',
-        },
-        
-        // Risk States
-        risk: {
-          safe: 'var(--risk-safe)',
-          'safe-bg': 'var(--risk-safe-bg)',
-          warning: 'var(--risk-warning)',
-          'warning-bg': 'var(--risk-warning-bg)',
-          danger: 'var(--risk-danger)',
-          'danger-bg': 'var(--risk-danger-bg)',
-        },
-        
-        // shadcn/ui compatibility
+        // shadcn/ui
         card: {
           DEFAULT: 'var(--card)',
           foreground: 'var(--card-foreground)',
@@ -162,51 +114,42 @@ module.exports = {
       },
       
       /* ============================================
-         Typography - Linked to CSS Variables
-         Changing --text-base scales the entire system
+         Typography - Clean Scale
          ============================================ */
       fontSize: {
-        '2xs': ['var(--text-2xs)', { lineHeight: 'var(--text-2xs-line)' }],
-        'xs': ['var(--text-xs)', { lineHeight: 'var(--text-xs-line)' }],
-        'sm': ['var(--text-sm)', { lineHeight: 'var(--text-sm-line)' }],
-        'base': ['var(--text-base)', { lineHeight: 'var(--text-base-line)' }],
-        'lg': ['var(--text-lg)', { lineHeight: 'var(--text-lg-line)' }],
-        'xl': ['var(--text-xl)', { lineHeight: 'var(--text-xl-line)' }],
-        '2xl': ['var(--text-2xl)', { lineHeight: 'var(--text-2xl-line)' }],
-        '3xl': ['var(--text-3xl)', { lineHeight: 'var(--text-3xl-line)' }],
+        xs: ['var(--text-xs)', { lineHeight: 'var(--leading-normal)' }],
+        sm: ['var(--text-sm)', { lineHeight: 'var(--leading-normal)' }],
+        base: ['var(--text-base)', { lineHeight: 'var(--leading-normal)' }],
+        lg: ['var(--text-lg)', { lineHeight: 'var(--leading-tight)' }],
+        xl: ['var(--text-xl)', { lineHeight: 'var(--leading-tight)' }],
+        '2xl': ['var(--text-2xl)', { lineHeight: 'var(--leading-tight)' }],
+        '3xl': ['var(--text-3xl)', { lineHeight: 'var(--leading-tight)' }],
       },
       
-      /* ============================================
-         Font Family - System Font Stack
-         ============================================ */
       fontFamily: {
         sans: [
           '-apple-system',
           'BlinkMacSystemFont',
+          '"SF Pro Display"',
           '"Segoe UI"',
           'Roboto',
           'Helvetica',
           'Arial',
           '"PingFang SC"',
           '"Hiragino Sans GB"',
-          '"HarmonyOS Sans SC"',
           '"Microsoft YaHei"',
-          '"Source Han Sans SC"',
-          '"Noto Sans SC"',
           'sans-serif',
         ],
         mono: [
           'SF Mono',
           'Monaco',
-          'Inconsolata',
           '"Fira Code"',
-          '"Source Code Pro"',
           'monospace',
         ],
       },
       
       /* ============================================
-         Border Radius
+         Radius
          ============================================ */
       borderRadius: {
         sm: 'var(--radius-sm)',
@@ -217,63 +160,54 @@ module.exports = {
       },
       
       /* ============================================
-         Spacing
-         ============================================ */
-      spacing: {
-        '18': '4.5rem',
-        '22': '5.5rem',
-      },
-      
-      /* ============================================
          Shadows
          ============================================ */
       boxShadow: {
         sm: 'var(--shadow-sm)',
         md: 'var(--shadow-md)',
         lg: 'var(--shadow-lg)',
-        xl: 'var(--shadow-xl)',
+        brand: 'var(--shadow-brand)',
       },
       
       /* ============================================
          Transitions
          ============================================ */
       transitionDuration: {
-        fast: '150ms',
+        fast: '120ms',
         base: '200ms',
         slow: '300ms',
+      },
+      
+      transitionTimingFunction: {
+        smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
       
       /* ============================================
          Animations
          ============================================ */
       keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
         "fade-in": {
-          from: { opacity: "0", transform: "translateY(10px)" },
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "slide-up": {
+          from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
         "scale-in": {
-          from: { opacity: "0", transform: "scale(0.95)" },
+          from: { opacity: "0", transform: "scale(0.96)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
-        "slide-in-right": {
-          from: { opacity: "0", transform: "translateX(20px)" },
-          to: { opacity: "1", transform: "translateX(0)" },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
-        "scale-in": "scale-in 0.2s ease-out",
-        "slide-in-right": "slide-in-right 0.3s ease-out",
+        "fade-in": "fade-in 200ms ease-out",
+        "slide-up": "slide-up 200ms ease-out",
+        "scale-in": "scale-in 150ms ease-out",
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
       },
     },
   },

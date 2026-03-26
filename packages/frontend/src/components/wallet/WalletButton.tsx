@@ -36,10 +36,9 @@ export function WalletButton() {
 
   return (
     <>
-      {/* Desktop Button */}
       <Button
         variant="primary"
-        className="hidden sm:flex items-center gap-2 h-10 px-4"
+        className="hidden sm:flex"
         onClick={handleClick}
         isLoading={isConnecting}
       >
@@ -51,10 +50,9 @@ export function WalletButton() {
         </span>
       </Button>
 
-      {/* Mobile Button */}
       <Button
         variant="primary"
-        className="sm:hidden flex items-center gap-2 h-10 px-4"
+        className="sm:hidden"
         onClick={handleClick}
         isLoading={isConnecting}
       >
@@ -71,29 +69,29 @@ export function WalletButton() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 mt-4">
-            <div className="p-4 rounded-lg bg-background-tertiary border border-border">
+            <div className="p-4 rounded-lg bg-background-elevated border border-border">
               <p className="text-sm text-foreground-secondary">
                 Catena Wallet is a browser extension for Bitcoin and OPCAT assets. 
                 Install it from the Chrome Web Store to continue.
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
-                variant="secondary"
-                className="flex-1 h-11"
+                variant="ghost"
+                className="flex-1"
                 onClick={() => setShowInstallDialog(false)}
               >
                 Cancel
               </Button>
               <Button
                 variant="primary"
-                className="flex-1 h-11"
+                className="flex-1"
                 onClick={() => {
                   openCatenaDownloadPage();
                   setShowInstallDialog(false);
                 }}
               >
-                Install Wallet
+                Install
               </Button>
             </div>
           </div>
@@ -104,14 +102,14 @@ export function WalletButton() {
       <Dialog open={!!error} onOpenChange={() => setError(null)}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle className="text-danger">Connection Failed</DialogTitle>
+            <DialogTitle className="text-sell">Connection Failed</DialogTitle>
             <DialogDescription>
               {error}
             </DialogDescription>
           </DialogHeader>
           <Button
             variant="secondary"
-            className="w-full mt-4 h-11"
+            className="w-full mt-4"
             onClick={() => setError(null)}
           >
             OK
