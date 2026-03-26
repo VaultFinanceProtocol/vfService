@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  darkMode: ["class", "[data-theme='dark']"],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -25,66 +25,129 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        // Semantic background tokens
+        background: {
+          DEFAULT: 'var(--bg-primary)',
+          secondary: 'var(--bg-secondary)',
+          tertiary: 'var(--bg-tertiary)',
+          hover: 'var(--bg-hover)',
+          active: 'var(--bg-active)',
+          input: 'var(--bg-input)',
+          card: 'var(--bg-card)',
+        },
+        // Semantic foreground/text tokens
+        foreground: {
+          DEFAULT: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          tertiary: 'var(--text-tertiary)',
+          muted: 'var(--text-muted)',
+        },
+        // Border tokens
+        border: {
+          DEFAULT: 'var(--border-primary)',
+          secondary: 'var(--border-secondary)',
+          hover: 'var(--border-hover)',
+          active: 'var(--border-active)',
+        },
+        // Primary brand color (Bright Blue)
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: 'var(--primary)',
+          hover: 'var(--primary-hover)',
+          light: 'var(--primary-light)',
+          foreground: 'var(--primary-foreground)',
         },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+        // Buy/Success - Trading green
+        success: {
+          DEFAULT: 'var(--color-buy)',
+          hover: 'var(--color-buy-hover)',
+          light: 'var(--color-buy-light)',
+          bg: 'var(--color-buy-bg)',
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+        // Sell/Danger - Trading red
+        danger: {
+          DEFAULT: 'var(--color-sell)',
+          hover: 'var(--color-sell-hover)',
+          light: 'var(--color-sell-light)',
+          bg: 'var(--color-sell-bg)',
         },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+        // Warning
+        warning: {
+          DEFAULT: 'var(--color-warning)',
         },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+        // Info
+        info: {
+          DEFAULT: 'var(--color-info)',
+        },
+        // shadcn/ui compatibility
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
         },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
         },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
+        },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
+        input: 'var(--input)',
+        ring: 'var(--ring)',
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
+      // System Font Stack - No external fonts
       fontFamily: {
         sans: [
-          'Inter',
-          'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
-          'Segoe UI',
+          '"Segoe UI"',
           'Roboto',
+          'Helvetica',
+          'Arial',
+          '"PingFang SC"',
+          '"Hiragino Sans GB"',
+          '"HarmonyOS Sans SC"',
+          '"Microsoft YaHei"',
+          '"Source Han Sans SC"',
+          '"Noto Sans SC"',
           'sans-serif',
         ],
         mono: [
-          'JetBrains Mono',
-          'Fira Code',
-          'Menlo',
+          'SF Mono',
           'Monaco',
-          'Consolas',
+          'Inconsolata',
+          '"Fira Code"',
+          '"Source Code Pro"',
           'monospace',
         ],
       },
+      borderRadius: {
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
+        full: 'var(--radius-full)',
+      },
       fontSize: {
         '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
+        xs: ['0.6875rem', { lineHeight: '0.875rem' }],
+        sm: ['0.75rem', { lineHeight: '1rem' }],
+        base: ['0.875rem', { lineHeight: '1.25rem' }],
+        lg: ['1rem', { lineHeight: '1.5rem' }],
+        xl: ['1.125rem', { lineHeight: '1.625rem' }],
+        '2xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '3xl': ['1.5rem', { lineHeight: '2rem' }],
       },
       spacing: {
         '18': '4.5rem',
@@ -123,10 +186,6 @@ module.exports = {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-5px)" },
         },
-        "shimmer": {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -137,19 +196,17 @@ module.exports = {
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "pulse-soft": "pulse-soft 2s ease-in-out infinite",
         "float": "float 3s ease-in-out infinite",
-        "shimmer": "shimmer 2s linear infinite",
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       boxShadow: {
-        'glow': '0 0 20px rgba(99, 102, 241, 0.3)',
-        'glow-lg': '0 0 30px rgba(99, 102, 241, 0.4)',
-        'inner-light': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.1)',
+        'sm': 'var(--shadow-sm)',
+        'md': 'var(--shadow-md)',
+        'lg': 'var(--shadow-lg)',
+        'xl': 'var(--shadow-xl)',
       },
-      transitionTimingFunction: {
-        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      transitionDuration: {
+        'fast': '150ms',
+        'base': '200ms',
+        'slow': '300ms',
       },
     },
   },

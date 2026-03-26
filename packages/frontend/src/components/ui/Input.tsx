@@ -1,5 +1,4 @@
 import * as React from "react"
-
 import { cn } from "@lib/utils"
 
 export interface InputProps
@@ -11,7 +10,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "flex h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 text-sm text-[var(--fg)] file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--fg-muted)] focus-visible:outline-none focus-visible:border-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
+          "flex h-10 w-full rounded-lg border border-border bg-background-tertiary px-3 py-2 text-sm text-foreground",
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+          "placeholder:text-foreground-tertiary",
+          "focus-visible:outline-none focus-visible:border-primary",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "transition-colors",
           className
         )}
         ref={ref}

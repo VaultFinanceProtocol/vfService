@@ -13,13 +13,13 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 const STORAGE_KEY = 'vfservice-theme';
 
 function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'light';
+  if (typeof window === 'undefined') return 'dark';
 
   const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
   if (stored && ['light', 'dark'].includes(stored)) {
     return stored;
   }
-  return 'light';
+  return 'dark';
 }
 
 interface ThemeProviderProps {
@@ -31,24 +31,15 @@ export function ThemeProvider({ children, defaultTheme }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(defaultTheme || getInitialTheme);
   const [mounted, setMounted] = useState(false);
 
-  // Avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Apply theme class to html element
   useEffect(() => {
     if (!mounted) return;
 
     const root = document.documentElement;
-
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-
-    // Store preference
+    root.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme, mounted]);
 
@@ -61,7 +52,7 @@ export function ThemeProvider({ children, defaultTheme }: ThemeProviderProps) {
   };
 
   const value = {
-    theme: mounted ? theme : 'light',
+    theme: mounted ? theme : 'dark',
     setTheme,
     toggleTheme,
   };

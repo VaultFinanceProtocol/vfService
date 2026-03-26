@@ -4,24 +4,25 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
-        default: "bg-[var(--primary)] text-[var(--primary-contrast)] hover:bg-[var(--primary-hover)] hover:shadow-md",
-        destructive:
-          "bg-[var(--danger)] text-[var(--danger-contrast)] hover:bg-[var(--danger-hover)]",
-        outline:
-          "border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--fg)] hover:bg-[var(--bg-hover)] hover:border-[var(--border-strong)]",
-        secondary:
-          "bg-[var(--bg-muted)] text-[var(--fg)] hover:bg-[var(--bg-hover)]",
-        ghost: "hover:bg-[var(--bg-hover)] text-[var(--fg-muted)] hover:text-[var(--fg)]",
-        link: "text-[var(--primary)] underline-offset-4 hover:underline",
+        default: "bg-primary text-white hover:bg-primary-hover focus-visible:ring-primary",
+        primary: "bg-primary text-white hover:bg-primary-hover focus-visible:ring-primary",
+        secondary: "bg-background-tertiary text-foreground border border-border hover:bg-background-hover hover:border-border-hover focus-visible:ring-border",
+        ghost: "bg-transparent text-foreground-secondary hover:text-foreground hover:bg-background-tertiary focus-visible:ring-background-tertiary",
+        outline: "border border-border bg-transparent text-foreground hover:bg-background-tertiary focus-visible:ring-border",
+        buy: "bg-success text-black hover:bg-success-hover focus-visible:ring-success",
+        sell: "bg-danger text-white hover:bg-danger-hover focus-visible:ring-danger",
+        destructive: "bg-danger text-white hover:bg-danger-hover focus-visible:ring-danger",
+        link: "text-primary underline-offset-4 hover:underline focus-visible:ring-primary",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-lg px-8",
+        sm: "h-8 px-3 text-xs",
+        md: "h-10 px-4 py-2",
+        lg: "h-12 px-6 text-base",
         icon: "h-10 w-10",
       },
     },
@@ -36,17 +37,44 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  isLoading?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, isLoading, children, disabled, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        disabled={disabled || isLoading}
         {...props}
-      />
+      >
+        {isLoading && (
+          <svg
+            className="animate-spin h-4 w-4 mr-2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+        )}
+        {children}
+      </Comp>
     )
   }
 )

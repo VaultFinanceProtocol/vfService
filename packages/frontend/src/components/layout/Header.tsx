@@ -29,31 +29,19 @@ export function Header() {
   return (
     <>
       {/* Main Header */}
-      <header
-        className="sticky top-0 z-50 w-full backdrop-blur-xl border-b"
-        style={{
-          backgroundColor: 'rgba(var(--bg-elevated-rgb, 255, 255, 255), 0.8)',
-          borderColor: 'var(--border)',
-        }}
-      >
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-background-secondary/95 backdrop-blur-xl">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/markets" className="flex items-center gap-3 group">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105"
-                style={{
-                  background: 'var(--gradient-primary)',
-                  boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
-                }}
-              >
-                <span className="font-bold text-sm text-white">VF</span>
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-primary text-white font-bold text-sm transition-all duration-200 group-hover:scale-105">
+                VF
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-lg font-bold tracking-tight" style={{ color: 'var(--fg)' }}>
+                <h1 className="text-lg font-bold tracking-tight text-foreground">
                   VaultFinance
                 </h1>
-                <p className="text-[10px] -mt-0.5 font-medium" style={{ color: 'var(--fg-muted)' }}>
+                <p className="text-[10px] -mt-0.5 font-medium text-foreground-secondary">
                   DeFi Lending Protocol
                 </p>
               </div>
@@ -70,12 +58,9 @@ export function Header() {
                     className={cn(
                       'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                       active
-                        ? 'text-[var(--primary)]'
-                        : 'text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--bg-hover)]'
+                        ? 'text-primary bg-primary-light'
+                        : 'text-foreground-secondary hover:text-foreground hover:bg-background-tertiary'
                     )}
-                    style={{
-                      backgroundColor: active ? 'var(--primary-muted)' : 'transparent',
-                    }}
                   >
                     {item.label}
                   </Link>
@@ -85,19 +70,14 @@ export function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              {/* Theme Toggle */}
               <div className="hidden sm:block">
                 <ThemeToggle />
               </div>
-
-              {/* Connect Wallet Button */}
               <WalletButton />
-
-              {/* Mobile Menu Button */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden h-10 w-10 rounded-lg text-[var(--fg-muted)]"
+                className="lg:hidden h-10 w-10 text-foreground-secondary"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 {mobileMenuOpen ? (
@@ -113,10 +93,9 @@ export function Header() {
         {/* Mobile Navigation Menu */}
         <div
           className={cn(
-            'lg:hidden border-t overflow-hidden transition-all duration-300 ease-out',
+            'lg:hidden border-t border-border overflow-hidden transition-all duration-300 ease-out bg-background-secondary',
             mobileMenuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
           )}
-          style={{ borderColor: 'var(--border)' }}
         >
           <nav className="px-4 py-3 space-y-1">
             {navItems.map((item) => {
@@ -127,28 +106,20 @@ export function Header() {
                   to={item.path}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
+                    'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200',
                     active
-                      ? 'text-[var(--primary)]'
-                      : 'text-[var(--fg-muted)]'
+                      ? 'text-primary bg-primary-light'
+                      : 'text-foreground-secondary hover:text-foreground hover:bg-background-tertiary'
                   )}
-                  style={{
-                    backgroundColor: active ? 'var(--primary-muted)' : 'transparent',
-                  }}
                 >
                   <span>{item.label}</span>
                   {active && (
-                    <div
-                      className="ml-auto w-1.5 h-1.5 rounded-full"
-                      style={{ backgroundColor: 'var(--primary)' }}
-                    />
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
                   )}
                 </Link>
               );
             })}
-
-            {/* Mobile Actions */}
-            <div className="pt-3 mt-3 border-t flex items-center gap-3" style={{ borderColor: 'var(--border)' }}>
+            <div className="pt-3 mt-3 border-t border-border flex items-center gap-3">
               <div className="flex-1">
                 <WalletButton />
               </div>
@@ -161,14 +132,7 @@ export function Header() {
       </header>
 
       {/* Mobile Bottom Navigation */}
-      <nav 
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t safe-area-bottom"
-        style={{
-          backgroundColor: 'rgba(var(--bg-elevated-rgb, 255, 255, 255), 0.95)',
-          backdropFilter: 'blur(12px)',
-          borderColor: 'var(--border)',
-        }}
-      >
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background-secondary/95 backdrop-blur-xl safe-area-bottom">
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.slice(0, 5).map((item) => {
             const active = isActive(item.path);
@@ -177,8 +141,8 @@ export function Header() {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 min-w-[64px]',
-                  active ? 'text-[var(--primary)]' : 'text-[var(--fg-muted)]'
+                  'flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 min-w-[64px]',
+                  active ? 'text-primary' : 'text-foreground-secondary'
                 )}
               >
                 <span className="text-[11px] font-medium">{item.label}</span>

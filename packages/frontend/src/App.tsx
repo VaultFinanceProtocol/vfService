@@ -20,7 +20,7 @@ const swrConfig = {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light">
+    <ThemeProvider defaultTheme="dark">
       <WalletProvider>
         <SWRConfig value={swrConfig}>
           <Router>
