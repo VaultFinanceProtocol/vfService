@@ -226,7 +226,7 @@ export function MarketDetailPage() {
                     placeholder={`Enter ${pool.symbol} amount`}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="h-12 rounded-xl border-border focus:border-buy"
+                    className="h-12 rounded-xl border-border focus:border-brand"
                   />
                 </div>
 

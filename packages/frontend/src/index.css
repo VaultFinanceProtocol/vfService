@@ -1,12 +1,5 @@
 /* ============================================
    VaultFinance - Refined Design System
-   ============================================
-   
-   Core Philosophy:
-   - Minimal & Clean: Pure black/white foundations
-   - Vibrant Accents: FE2C55 pink for energy
-   - Clear Hierarchy: Three-level gray scale typography
-   - Efficient Interactions: Purposeful motion & feedback
    ============================================ */
 
 @tailwind base;
@@ -14,29 +7,25 @@
 @tailwind utilities;
 
 @layer base {
+  /* ============================================
+     Root Variables - Dark Theme (Default)
+     ============================================ */
   :root {
-    /* ============================================
-       Brand Colors
-       ============================================ */
+    /* Brand */
     --brand: #FE2C55;
     --brand-hover: #FF4D6D;
     --brand-light: rgba(254, 44, 85, 0.12);
     --brand-dark: #D91A40;
     
-    /* ============================================
-       Semantic Colors - Trading
-       ============================================ */
+    /* Trading */
     --color-buy: #00D084;
     --color-buy-hover: #00E090;
     --color-buy-light: rgba(0, 208, 132, 0.12);
-    
     --color-sell: #FF3B30;
     --color-sell-hover: #FF5549;
     --color-sell-light: rgba(255, 59, 48, 0.12);
     
-    /* ============================================
-       Dark Theme (Default) - Pure Black Foundation
-       ============================================ */
+    /* Dark Background */
     --bg-page: #000000;
     --bg-surface: #0A0A0A;
     --bg-elevated: #141414;
@@ -44,41 +33,18 @@
     --bg-active: #222222;
     --bg-input: #0F0F0F;
     
-    /* Border - subtle separation */
-    --border-default: #1F1F1F;
-    --border-subtle: #141414;
-    --border-strong: #2A2A2A;
-    --border-hover: #333333;
+    /* Dark Border */
+    --border-default: #262626;
+    --border-subtle: #1A1A1A;
+    --border-strong: #333333;
+    --border-hover: #404040;
     
-    /* Typography - Three Gray Levels */
+    /* Dark Text */
     --text-primary: #FFFFFF;
     --text-secondary: #A0A0A0;
     --text-tertiary: #6B6B6B;
     
-    /* ============================================
-       Light Theme - Pure White Foundation
-       ============================================ */
-    [data-theme='light'] {
-      --bg-page: #FFFFFF;
-      --bg-surface: #FAFAFA;
-      --bg-elevated: #F5F5F5;
-      --bg-hover: #EEEEEE;
-      --bg-active: #E5E5E5;
-      --bg-input: #FFFFFF;
-      
-      --border-default: #E8E8E8;
-      --border-subtle: #F0F0F0;
-      --border-strong: #DCDCDC;
-      --border-hover: #D0D0D0;
-      
-      --text-primary: #000000;
-      --text-secondary: #666666;
-      --text-tertiary: #999999;
-    }
-    
-    /* ============================================
-       Typography Scale - Clean & Readable
-       ============================================ */
+    /* Typography */
     --text-xs: 0.75rem;
     --text-sm: 0.8125rem;
     --text-base: 0.9375rem;
@@ -87,36 +53,28 @@
     --text-2xl: 1.5rem;
     --text-3xl: 2rem;
     
-    /* Line Heights */
+    /* Spacing */
     --leading-tight: 1.25;
     --leading-normal: 1.5;
-    --leading-relaxed: 1.75;
     
-    /* ============================================
-       Radius - Subtle & Modern
-       ============================================ */
+    /* Radius */
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
     --radius-xl: 20px;
     --radius-full: 9999px;
     
-    /* ============================================
-       Shadows - Soft & Elevated
-       ============================================ */
+    /* Shadows */
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
     --shadow-brand: 0 4px 20px rgba(254, 44, 85, 0.3);
     
-    /* ============================================
-       Transitions - Smooth & Efficient
-       ============================================ */
+    /* Transitions */
     --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     
-    /* shadcn/ui compatibility */
+    /* shadcn/ui */
     --background: var(--bg-page);
     --foreground: var(--text-primary);
     --card: var(--bg-surface);
@@ -140,6 +98,42 @@
   }
 
   /* ============================================
+     Light Theme Override
+     ============================================ */
+  [data-theme='light'] {
+    /* Light Background */
+    --bg-page: #FFFFFF;
+    --bg-surface: #FAFAFA;
+    --bg-elevated: #F2F2F2;
+    --bg-hover: #E8E8E8;
+    --bg-active: #E0E0E0;
+    --bg-input: #FFFFFF;
+    
+    /* Light Border - Neutral gray */
+    --border-default: #E5E5E5;
+    --border-subtle: #F0F0F0;
+    --border-strong: #D4D4D4;
+    --border-hover: #C8C8C8;
+    
+    /* Light Text */
+    --text-primary: #000000;
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+    
+    /* Light Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    
+    /* Light shadcn */
+    --background: var(--bg-page);
+    --foreground: var(--text-primary);
+    --secondary: var(--bg-elevated);
+    --muted: var(--bg-elevated);
+    --border: var(--border-default);
+  }
+
+  /* ============================================
      Base Styles
      ============================================ */
   * {
@@ -150,7 +144,6 @@
     @apply antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
   }
 
   body {
@@ -162,7 +155,6 @@
     transition: background-color var(--transition-base), color var(--transition-base);
   }
 
-  /* Focus States */
   :focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 4px var(--brand);
@@ -178,26 +170,14 @@
    ============================================ */
 
 @layer components {
-  /* Surface Card */
+  /* Card - Clean with subtle border */
   .surface {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-lg);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   }
   
-  .surface:hover {
-    border-color: var(--border-strong);
-  }
-  
-  /* Elevated Card */
-  .elevated {
-    background-color: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-  }
-  
-  /* Input Field */
+  /* Input - Clean and focused */
   .input {
     background-color: var(--bg-input);
     border: 1px solid var(--border-default);
@@ -217,11 +197,7 @@
     box-shadow: 0 0 0 3px var(--brand-light);
   }
   
-  .input::placeholder {
-    color: var(--text-tertiary);
-  }
-  
-  /* Navigation Item */
+  /* Navigation */
   .nav-item {
     @apply flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-150;
     color: var(--text-secondary);
@@ -238,7 +214,7 @@
     background-color: var(--brand-light);
   }
   
-  /* Primary Button */
+  /* Button Primary */
   .btn-primary {
     @apply inline-flex items-center justify-center font-semibold transition-all duration-150;
     background-color: var(--brand);
@@ -254,71 +230,7 @@
     transform: translateY(-1px);
   }
   
-  .btn-primary:active {
-    transform: translateY(0);
-  }
-  
-  /* Secondary Button */
-  .btn-secondary {
-    @apply inline-flex items-center justify-center font-medium transition-all duration-150;
-    background-color: var(--bg-elevated);
-    color: var(--text-primary);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-md);
-    padding: 10px 20px;
-    font-size: var(--text-sm);
-  }
-  
-  .btn-secondary:hover {
-    background-color: var(--bg-hover);
-    border-color: var(--border-strong);
-  }
-  
-  /* Ghost Button */
-  .btn-ghost {
-    @apply inline-flex items-center justify-center font-medium transition-all duration-150;
-    background-color: transparent;
-    color: var(--text-secondary);
-    border-radius: var(--radius-md);
-    padding: 10px 20px;
-    font-size: var(--text-sm);
-  }
-  
-  .btn-ghost:hover {
-    color: var(--text-primary);
-    background-color: var(--bg-hover);
-  }
-  
-  /* Buy/Sell Buttons */
-  .btn-buy {
-    @apply inline-flex items-center justify-center font-semibold transition-all duration-150;
-    background-color: var(--color-buy);
-    color: black;
-    border-radius: var(--radius-md);
-    padding: 10px 20px;
-    font-size: var(--text-sm);
-  }
-  
-  .btn-buy:hover {
-    background-color: var(--color-buy-hover);
-    transform: translateY(-1px);
-  }
-  
-  .btn-sell {
-    @apply inline-flex items-center justify-center font-semibold transition-all duration-150;
-    background-color: var(--color-sell);
-    color: white;
-    border-radius: var(--radius-md);
-    padding: 10px 20px;
-    font-size: var(--text-sm);
-  }
-  
-  .btn-sell:hover {
-    background-color: var(--color-sell-hover);
-    transform: translateY(-1px);
-  }
-  
-  /* Badge Variants */
+  /* Badge */
   .badge {
     @apply inline-flex items-center px-2.5 py-1 rounded-full font-semibold;
     font-size: var(--text-xs);
@@ -338,60 +250,6 @@
     background-color: var(--color-sell-light);
     color: var(--color-sell);
   }
-  
-  .badge-neutral {
-    background-color: var(--bg-elevated);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-default);
-  }
-  
-  /* Status Indicator */
-  .status-dot {
-    @apply w-2 h-2 rounded-full;
-  }
-  
-  .status-dot.active {
-    background-color: var(--color-buy);
-    box-shadow: 0 0 8px var(--color-buy);
-  }
-  
-  .status-dot.warning {
-    background-color: #FFB800;
-    box-shadow: 0 0 8px #FFB800;
-  }
-  
-  .status-dot.error {
-    background-color: var(--color-sell);
-    box-shadow: 0 0 8px var(--color-sell);
-  }
-  
-  /* Amount Display */
-  .amount {
-    @apply font-semibold tabular-nums;
-    font-feature-settings: "tnum";
-    letter-spacing: -0.02em;
-  }
-  
-  /* Section Title */
-  .section-title {
-    color: var(--text-primary);
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-  
-  /* Label */
-  .label {
-    color: var(--text-secondary);
-    font-size: var(--text-sm);
-    font-weight: 500;
-  }
-  
-  /* Caption */
-  .caption {
-    color: var(--text-tertiary);
-    font-size: var(--text-xs);
-  }
 }
 
 /* ============================================
@@ -403,10 +261,9 @@
     background: linear-gradient(135deg, var(--brand) 0%, #FF6B8A 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
   
-  .safe-area-bottom {
+  .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
 }
@@ -451,21 +308,6 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* ============================================
-   Number Input
-   ============================================ */
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
 }

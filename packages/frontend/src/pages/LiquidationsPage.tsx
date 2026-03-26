@@ -239,7 +239,7 @@ export function LiquidationsPage() {
           {step === "input" && selectedPosition && (
             <div className="space-y-4 mt-4">
               <div 
-                className="p-4 rounded-xl border border-sell-light bg-sell-light/30"
+                className="p-4 rounded-xl border border-border bg-sell-light/30"
               >
                 <p className="font-medium text-sell">Borrower at Risk</p>
                 <p className="text-sm text-sell mt-1">
@@ -296,7 +296,7 @@ export function LiquidationsPage() {
           {step === "preview" && preview && (
             <div className="space-y-4 mt-4">
               <div 
-                className="p-4 rounded-xl border border-buy-light bg-buy-light/30"
+                className="p-4 rounded-xl border border-border bg-buy-light/30"
               >
                 <p className="font-medium text-buy flex items-center gap-2">
                   <CheckCircle className="h-4 w-4" />

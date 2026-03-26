@@ -183,7 +183,7 @@ export function EarnPage() {
                         className={cn(
                           "p-3 rounded-xl border transition-all duration-200",
                           selectedAsset === pool.asset
-                            ? "border-buy bg-buy-light"
+                            ? "border-border-strong bg-buy-light"
                             : "border-border hover:border-border-strong hover:bg-background-hover"
                         )}
                       >
@@ -213,7 +213,7 @@ export function EarnPage() {
                       placeholder="0.00"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="h-12 pr-20 text-lg rounded-xl border-border focus:border-buy"
+                      className="h-12 pr-20 text-lg rounded-xl border-border focus:border-brand"
                     />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-foreground-muted">
                       {selectedPool?.symbol || "Token"}

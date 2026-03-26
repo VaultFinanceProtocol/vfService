@@ -25,29 +25,29 @@ interface RiskBannerProps {
 const variantConfig = {
   info: {
     icon: Info,
-    bgClass: "bg-background-surface",
-    borderClass: "border-l-brand",
-    textClass: "text-brand",
+    bgClass: "bg-background-elevated",
+    borderClass: "border-border",
+    textClass: "text-foreground-secondary",
     iconClass: "text-brand",
   },
   warning: {
     icon: AlertTriangle,
     bgClass: "bg-sell-light",
-    borderClass: "border-l-brand",
-    textClass: "text-brand",
-    iconClass: "text-brand",
+    borderClass: "border-border",
+    textClass: "text-sell",
+    iconClass: "text-sell",
   },
   danger: {
     icon: AlertCircle,
     bgClass: "bg-sell-light",
-    borderClass: "border-l-sell",
+    borderClass: "border-border",
     textClass: "text-sell",
     iconClass: "text-sell",
   },
   success: {
     icon: Shield,
     bgClass: "bg-buy-light",
-    borderClass: "border-l-buy",
+    borderClass: "border-border",
     textClass: "text-buy",
     iconClass: "text-buy",
   },
@@ -69,7 +69,7 @@ export function RiskBanner({
   return (
     <div
       className={cn(
-        "relative rounded-lg border-l-4 p-4",
+        "relative rounded-lg border p-4",
         config.bgClass,
         config.borderClass,
         className
