@@ -37,6 +37,9 @@ module.exports = {
           hover: 'var(--bg-hover)',
           active: 'var(--bg-active)',
           input: 'var(--bg-input)',
+          // Legacy aliases
+          secondary: 'var(--bg-surface)',
+          tertiary: 'var(--bg-elevated)',
         },
         
         // Foreground (Typography)

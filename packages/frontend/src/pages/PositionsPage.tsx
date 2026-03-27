@@ -131,19 +131,9 @@ export function PositionsPage() {
 
       {/* Supplies & Borrows */}
       <Tabs defaultValue="supplies" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 rounded-xl bg-background-surface p-1 h-12">
-          <TabsTrigger 
-            value="supplies" 
-            className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm"
-          >
-            Supplied Assets
-          </TabsTrigger>
-          <TabsTrigger 
-            value="borrows"
-            className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm"
-          >
-            Borrowed Assets
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 h-12">
+          <TabsTrigger value="supplies">Supplied Assets</TabsTrigger>
+          <TabsTrigger value="borrows">Borrowed Assets</TabsTrigger>
         </TabsList>
 
         <TabsContent value="supplies" className="mt-6">

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/Card";
 import { Button } from "@components/ui/Button";
 import { Input } from "@components/ui/Input";
@@ -16,6 +17,70 @@ import { formatUSD, formatAPY } from "@utils/format";
 import { cn } from "@lib/utils";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";
+
+// Mock assets for demo
+const MOCK_ASSETS = [
+  {
+    asset: '0000000000000000000000000000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    name: 'Ethereum',
+    decimals: 18,
+    totalSupplied: '1250000000000000000000',
+    totalBorrowed: '450000000000000000000',
+    liquidity: '950000000000000000000',
+    supplyAPY: '0.0319',
+    borrowAPY: '0.0528',
+    canCollateral: true,
+  },
+  {
+    asset: 'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
+    symbol: 'USDC',
+    name: 'USD Coin',
+    decimals: 6,
+    totalSupplied: '4500000000000',
+    totalBorrowed: '1800000000000',
+    liquidity: '3800000000000',
+    supplyAPY: '0.0245',
+    borrowAPY: '0.0472',
+    canCollateral: true,
+  },
+  {
+    asset: 'b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456a1',
+    symbol: 'USDT',
+    name: 'Tether USD',
+    decimals: 6,
+    totalSupplied: '3800000000000',
+    totalBorrowed: '1200000000000',
+    liquidity: '2900000000000',
+    supplyAPY: '0.0267',
+    borrowAPY: '0.0512',
+    canCollateral: false,
+  },
+  {
+    asset: 'c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456a1b2',
+    symbol: 'DAI',
+    name: 'Dai Stablecoin',
+    decimals: 18,
+    totalSupplied: '2100000000000000000000000',
+    totalBorrowed: '450000000000000000000000',
+    liquidity: '1750000000000000000000000',
+    supplyAPY: '0.0218',
+    borrowAPY: '0.0435',
+    canCollateral: true,
+  },
+  {
+    asset: 'd4e5f6789012345678901234567890abcdef1234567890abcdef123456a1b2c3',
+    symbol: 'WETH',
+    name: 'Wrapped Ethereum',
+    decimals: 18,
+    totalSupplied: '890000000000000000000',
+    totalBorrowed: '280000000000000000000',
+    liquidity: '720000000000000000000',
+    supplyAPY: '0.0302',
+    borrowAPY: '0.0498',
+    canCollateral: true,
+  },
+];
 
 // Asset icon with gradient background
 function AssetIcon({ symbol, className }: { symbol: string; className?: string }) {
@@ -76,7 +141,9 @@ function StatCard({
 }
 
 export function BorrowPage() {
-  const { pools, isLoading } = usePools(0, 100);
+  const { asset: assetParam } = useParams<{ asset?: string }>();
+  const { pools: fetchedPools, isLoading } = usePools(0, 100);
+  const pools = fetchedPools.length > 0 ? fetchedPools : MOCK_ASSETS;
   const { healthFactor } = useHealthFactor(MOCK_USER);
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
@@ -84,6 +151,17 @@ export function BorrowPage() {
 
   const borrowQuote = useQuote("borrow");
   const selectedPool = pools.find((p) => p.asset === selectedAsset);
+
+  // Auto-select asset from URL parameter
+  useEffect(() => {
+    if (assetParam && pools.length > 0 && !selectedAsset) {
+      const pool = pools.find((p) => p.symbol === assetParam) ||
+                   pools.find((p) => p.asset === assetParam);
+      if (pool) {
+        setSelectedAsset(pool.asset);
+      }
+    }
+  }, [assetParam, pools, selectedAsset]);
 
   const handleGetQuote = async () => {
     if (!selectedPool || !amount) return;
@@ -437,13 +515,14 @@ export function BorrowPage() {
                       </span>
                     </td>
                     <td className="text-center py-4 px-4 sm:px-6">
-                      <Button
-                        size="sm"
-                        onClick={() => setSelectedAsset(pool.asset)}
-                        className="rounded-lg font-medium transition-all hover:scale-105 bg-brand text-white"
-                      >
-                        Borrow
-                      </Button>
+                      <Link to={`/borrow/${pool.symbol}`}>
+                        <Button
+                          size="sm"
+                          className="rounded-lg font-medium transition-all hover:scale-105 bg-brand text-white"
+                        >
+                          Borrow
+                        </Button>
+                      </Link>
                     </td>
                   </tr>
                 ))}

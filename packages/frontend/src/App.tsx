@@ -6,8 +6,7 @@ import { WalletProvider } from '@contexts/wallet-context';
 import { Layout } from '@components/layout/Layout';
 import { MarketsPage } from '@pages/MarketsPage';
 import { MarketDetailPage } from '@pages/MarketDetailPage';
-import { EarnPage } from '@pages/EarnPage';
-import { BorrowPage } from '@pages/BorrowPage';
+// Legacy page imports removed - functionality moved to Markets Modal
 import { PositionsPage } from '@pages/PositionsPage';
 import { LiquidationsPage } from '@pages/LiquidationsPage';
 import { HistoryPage } from '@pages/HistoryPage';
@@ -29,8 +28,12 @@ function App() {
                 <Route path="/" element={<Navigate to="/markets" replace />} />
                 <Route path="/markets" element={<MarketsPage />} />
                 <Route path="/markets/:asset" element={<MarketDetailPage />} />
-                <Route path="/earn" element={<EarnPage />} />
-                <Route path="/borrow" element={<BorrowPage />} />
+                {/* Legacy routes redirect to Markets */}
+                <Route path="/earn" element={<Navigate to="/markets" replace />} />
+                <Route path="/supply" element={<Navigate to="/markets" replace />} />
+                <Route path="/supply/:asset" element={<Navigate to="/markets" replace />} />
+                <Route path="/borrow" element={<Navigate to="/markets" replace />} />
+                <Route path="/borrow/:asset" element={<Navigate to="/markets" replace />} />
                 <Route path="/positions" element={<PositionsPage />} />
                 <Route path="/liquidations" element={<LiquidationsPage />} />
                 <Route path="/history" element={<HistoryPage />} />

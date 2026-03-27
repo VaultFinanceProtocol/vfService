@@ -184,85 +184,25 @@
    ============================================ */
 
 @layer components {
-  /* Card - Clean with subtle border */
-  .surface {
-    background-color: var(--bg-surface);
+  /* DeFi-specific utility classes */
+  .metric-card {
+    @apply rounded-xl border border-border bg-background-surface p-5 transition-all duration-200;
+    @apply hover:border-border-strong hover:shadow-md;
+  }
+
+  .apy-positive {
+    @apply text-buy font-semibold;
+  }
+
+  .apy-negative {
+    @apply text-sell font-semibold;
+  }
+
+  .glass-card {
+    background: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-default);
-    border-radius: var(--radius-lg);
-  }
-  
-  /* Input - Clean and focused */
-  .input {
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-size: var(--text-base);
-    padding: 12px 16px;
-    transition: all var(--transition-fast);
-  }
-  
-  .input:hover {
-    border-color: var(--border-strong);
-  }
-  
-  .input:focus {
-    border-color: var(--brand);
-    box-shadow: 0 0 0 3px var(--brand-light);
-  }
-  
-  /* Navigation */
-  .nav-item {
-    @apply flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-150;
-    color: var(--text-secondary);
-    font-size: var(--text-sm);
-  }
-  
-  .nav-item:hover {
-    color: var(--text-primary);
-    background-color: var(--bg-hover);
-  }
-  
-  .nav-item.active {
-    color: var(--brand);
-    background-color: var(--brand-light);
-  }
-  
-  /* Button Primary */
-  .btn-primary {
-    @apply inline-flex items-center justify-center font-semibold transition-all duration-150;
-    background-color: var(--brand);
-    color: white;
-    border-radius: var(--radius-md);
-    padding: 10px 20px;
-    font-size: var(--text-sm);
-  }
-  
-  .btn-primary:hover {
-    background-color: var(--brand-hover);
-    box-shadow: var(--shadow-brand);
-    transform: translateY(-1px);
-  }
-  
-  /* Badge */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full font-semibold;
-    font-size: var(--text-xs);
-  }
-  
-  .badge-brand {
-    background-color: var(--brand-light);
-    color: var(--brand);
-  }
-  
-  .badge-buy {
-    background-color: var(--color-buy-light);
-    color: var(--color-buy);
-  }
-  
-  .badge-sell {
-    background-color: var(--color-sell-light);
-    color: var(--color-sell);
   }
 }
 

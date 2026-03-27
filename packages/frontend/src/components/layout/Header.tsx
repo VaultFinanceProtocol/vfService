@@ -8,8 +8,6 @@ import { cn } from '@lib/utils';
 
 const navItems = [
   { label: 'Markets', path: '/markets' },
-  { label: 'Earn', path: '/earn' },
-  { label: 'Borrow', path: '/borrow' },
   { label: 'Positions', path: '/positions' },
   { label: 'History', path: '/history' },
 ];
@@ -115,7 +113,7 @@ export function Header() {
       {/* Mobile Bottom Navigation */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background-page/95 backdrop-blur-md pb-safe">
         <div className="flex items-center justify-around px-2 py-2">
-          {navItems.slice(0, 5).map((item) => {
+          {navItems.map((item) => {
             const active = isActive(item.path);
             return (
               <Link
