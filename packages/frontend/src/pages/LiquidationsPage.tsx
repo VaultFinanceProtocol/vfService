@@ -251,6 +251,8 @@ export function LiquidationsPage() {
                 <Label className="text-foreground">Repay Amount ({selectedPosition.symbol})</Label>
                 <Input
                   type="number"
+                  min="0"
+                  step="0.000001"
                   placeholder={`Enter ${selectedPosition.symbol} amount to repay`}
                   value={repayAmount}
                   onChange={(e) => setRepayAmount(e.target.value)}

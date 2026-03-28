@@ -202,6 +202,8 @@ export function OperationModal({
               <Label>Amount ({position.symbol})</Label>
               <Input
                 type="number"
+                min="0"
+                step="0.000001"
                 placeholder={`Enter ${position.symbol} amount`}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}

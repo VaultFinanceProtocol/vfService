@@ -223,6 +223,8 @@ export function MarketDetailPage() {
                   <Label className="text-foreground">Amount ({pool.symbol})</Label>
                   <Input
                     type="number"
+                    min="0"
+                    step="0.000001"
                     placeholder={`Enter ${pool.symbol} amount`}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
@@ -260,6 +262,8 @@ export function MarketDetailPage() {
                   <Label className="text-foreground">Amount ({pool.symbol})</Label>
                   <Input
                     type="number"
+                    min="0"
+                    step="0.000001"
                     placeholder={`Enter ${pool.symbol} amount`}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}

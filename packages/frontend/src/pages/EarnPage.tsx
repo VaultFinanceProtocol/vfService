@@ -283,6 +283,8 @@ export function EarnPage() {
                   <div className="relative">
                     <Input
                       type="number"
+                      min="0"
+                      step="0.000001"
                       placeholder="0.00"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
