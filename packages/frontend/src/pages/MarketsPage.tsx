@@ -145,7 +145,7 @@ function OperationModal({ isOpen, onClose, pool, operation }: any) {
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => { setAmount(e.target.value); setShowPreview(false); }}
-                className="h-14 pr-20 text-xl font-semibold rounded-xl border-border focus:border-brand bg-background"
+                className="h-14 pr-20 text-xl font-semibold rounded-xl border-border focus:border-brand bg-background [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-foreground-muted">
                 {pool.symbol}
@@ -198,14 +198,14 @@ function OperationModal({ isOpen, onClose, pool, operation }: any) {
           {!showPreview ? (
             <button
               onClick={handlePreview}
-              disabled={!amount}
+              disabled={!amount || parseFloat(amount) <= 0}
               className={cn(
                 "w-full h-12 rounded-xl font-semibold text-white transition-all",
                 buttonColor,
-                !amount && "opacity-50 cursor-not-allowed"
+                (!amount || parseFloat(amount) <= 0) && "opacity-50 cursor-not-allowed"
               )}
             >
-              {!amount ? 'Enter amount' : `Preview ${isSupply ? 'Supply' : 'Borrow'}`}
+              {!amount || parseFloat(amount) <= 0 ? 'Enter amount' : `Preview ${isSupply ? 'Supply' : 'Borrow'}`}
             </button>
           ) : (
             <div className="space-y-4">
