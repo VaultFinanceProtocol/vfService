@@ -203,7 +203,7 @@ function OperationModal({ isOpen, onClose, pool, operation }: any) {
                 !amount && "opacity-50 cursor-not-allowed"
               )}
             >
-              Preview {isSupply ? 'Supply' : 'Borrow'}
+              {!amount ? 'Enter amount' : `Preview ${isSupply ? 'Supply' : 'Borrow'}`}
             </button>
           ) : (
             <div className="space-y-4">
