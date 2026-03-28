@@ -12,10 +12,10 @@
      ============================================ */
   :root {
     /* Brand */
-    --brand: #FE2C55;
-    --brand-hover: #FF4D6D;
-    --brand-light: rgba(254, 44, 85, 0.12);
-    --brand-dark: #D91A40;
+    --brand: #2B6D16;
+    --brand-hover: #3A8A1F;
+    --brand-light: rgba(43, 109, 22, 0.12);
+    --brand-dark: #1F4F10;
     
     /* Trading */
     --color-buy: #00D084;
