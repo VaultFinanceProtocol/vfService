@@ -11,6 +11,8 @@ import { useQuote } from "@hooks/useQuotes";
 import { formatUSD, formatAPY, formatAmount, formatLTV, formatHealthFactor } from "@utils/format";
 import { ArrowLeft, Calculator, AlertTriangle, CheckCircle } from "lucide-react";
 import { cn } from "@lib/utils";
+import { Seo } from "@components/seo/Seo";
+import { buildAbsoluteUrl } from "@lib/site";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";
 const ASSET_PRICES: Record<string, number> = {
@@ -73,6 +75,11 @@ function StatCard({
 export function MarketDetailPage() {
   const { asset } = useParams<{ asset: string }>();
   const { pool, isLoading } = usePool(asset);
+  const resolvedPath = asset ? `/markets/${asset}` : '/markets';
+  const baseTitle = pool ? `${pool.symbol} Market` : 'Market Details';
+  const baseDescription = pool
+    ? `Review ${pool.symbol} supply APY, borrow APY, liquidity, loan-to-value, and liquidation thresholds on VaultFinance.`
+    : 'Review market rates, liquidity, and collateral parameters on VaultFinance.';
 
   const [activeTab, setActiveTab] = useState("supply");
   const [amount, setAmount] = useState("");
@@ -104,24 +111,39 @@ export function MarketDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin" />
-        <p className="mt-4 text-foreground-muted">Loading market data...</p>
-      </div>
+      <>
+        <Seo
+          title={baseTitle}
+          description={baseDescription}
+          path={resolvedPath}
+        />
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+          <p className="mt-4 text-foreground-muted">Loading market data...</p>
+        </div>
+      </>
     );
   }
 
   if (!pool) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-foreground-muted">
-        <p className="text-lg font-medium text-foreground">Pool not found</p>
-        <Link to="/markets">
-          <Button className="mt-4 rounded-lg" variant="outline">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Markets
-          </Button>
-        </Link>
-      </div>
+      <>
+        <Seo
+          title={baseTitle}
+          description="The requested VaultFinance market could not be found."
+          path={resolvedPath}
+          noindex
+        />
+        <div className="flex flex-col items-center justify-center py-20 text-foreground-muted">
+          <p className="text-lg font-medium text-foreground">Pool not found</p>
+          <Link to="/markets">
+            <Button className="mt-4 rounded-lg" variant="outline">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Markets
+            </Button>
+          </Link>
+        </div>
+      </>
     );
   }
 
@@ -130,11 +152,46 @@ export function MarketDetailPage() {
 
   const currentQuote = activeTab === "supply" ? supplyQuote.quote : borrowQuote.quote;
   const isQuoteLoading = activeTab === "supply" ? supplyQuote.isLoading : borrowQuote.isLoading;
+  const structuredData = pool
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: `${pool.symbol} market on VaultFinance`,
+          description: baseDescription,
+          url: buildAbsoluteUrl(`/markets/${pool.asset}`) || `/markets/${pool.asset}`,
+          mainEntity: {
+            '@type': 'Thing',
+            name: pool.name,
+            identifier: pool.asset,
+            additionalProperty: [
+              { '@type': 'PropertyValue', name: 'Supply APY', value: formatAPY(pool.supplyAPY) },
+              { '@type': 'PropertyValue', name: 'Borrow APY', value: formatAPY(pool.borrowAPY) },
+              { '@type': 'PropertyValue', name: 'Liquidity', value: formatUSD(liquidityUSD) },
+              { '@type': 'PropertyValue', name: 'Loan-to-value', value: formatLTV(pool.ltv) },
+            ],
+          },
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Markets', item: buildAbsoluteUrl('/markets') || '/markets' },
+            { '@type': 'ListItem', position: 2, name: pool.symbol, item: buildAbsoluteUrl(`/markets/${pool.asset}`) || `/markets/${pool.asset}` },
+          ],
+        },
+      ]
+    : undefined;
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-start gap-4">
+    <article className="space-y-8 animate-fade-in">
+      <Seo
+        title={baseTitle}
+        description={baseDescription}
+        path={resolvedPath}
+        structuredData={structuredData}
+      />
+      <header className="flex items-start gap-4">
         <Link to="/markets">
           <Button 
             variant="ghost" 
@@ -155,42 +212,45 @@ export function MarketDetailPage() {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Total Liquidity"
-          value={formatUSD(liquidityUSD)}
-          delay={0}
-        />
-        <StatCard
-          title="Supply APY"
-          value={formatAPY(pool.supplyAPY)}
-          color="success"
-          delay={50}
-        />
-        <StatCard
-          title="Borrow APY"
-          value={formatAPY(pool.borrowAPY)}
-          color="warning"
-          delay={100}
-        />
-        <Card 
-          className="transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
-          style={{ animationDelay: '150ms' }}
-        >
-          <CardContent className="pt-6">
-            <div className="text-xs text-foreground-muted uppercase tracking-wide mb-1">Utilization</div>
-            <div className="text-2xl font-bold text-brand">
-              {formatAPY(pool.utilization)}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <section aria-labelledby="market-stats-heading" className="space-y-4">
+        <h2 id="market-stats-heading" className="sr-only">
+          Market statistics
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            title="Total Liquidity"
+            value={formatUSD(liquidityUSD)}
+            delay={0}
+          />
+          <StatCard
+            title="Supply APY"
+            value={formatAPY(pool.supplyAPY)}
+            color="success"
+            delay={50}
+          />
+          <StatCard
+            title="Borrow APY"
+            value={formatAPY(pool.borrowAPY)}
+            color="warning"
+            delay={100}
+          />
+          <Card 
+            className="transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+            style={{ animationDelay: '150ms' }}
+          >
+            <CardContent className="pt-6">
+              <div className="text-xs text-foreground-muted uppercase tracking-wide mb-1">Utilization</div>
+              <div className="text-2xl font-bold text-brand">
+                {formatAPY(pool.utilization)}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
-      {/* Action Panel */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <section aria-labelledby="market-actions-heading" className="grid gap-6 lg:grid-cols-2">
         <Card className="overflow-hidden">
           <div 
             className={cn(
@@ -199,7 +259,7 @@ export function MarketDetailPage() {
             )}
           />
           <CardHeader>
-            <CardTitle>Actions</CardTitle>
+            <CardTitle id="market-actions-heading">Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -407,33 +467,34 @@ export function MarketDetailPage() {
             )}
           </CardContent>
         </Card>
-      </div>
+      </section>
 
-      {/* Risk Parameters */}
-      <Card>
-        <CardHeader className="border-b border-border">
-          <CardTitle>Risk Parameters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="p-4 rounded-xl bg-background-surface">
-              <div className="text-sm text-foreground-muted mb-1">LTV</div>
-              <div className="text-xl font-bold text-foreground">{formatLTV(pool.ltv)}</div>
-              <div className="text-xs text-foreground-muted mt-1">Loan-to-Value ratio</div>
+      <section aria-labelledby="risk-parameters-heading">
+        <Card>
+          <CardHeader className="border-b border-border">
+            <CardTitle id="risk-parameters-heading">Risk Parameters</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="p-4 rounded-xl bg-background-surface">
+                <div className="text-sm text-foreground-muted mb-1">LTV</div>
+                <div className="text-xl font-bold text-foreground">{formatLTV(pool.ltv)}</div>
+                <div className="text-xs text-foreground-muted mt-1">Loan-to-Value ratio</div>
+              </div>
+              <div className="p-4 rounded-xl bg-background-surface">
+                <div className="text-sm text-foreground-muted mb-1">Liquidation Threshold</div>
+                <div className="text-xl font-bold text-foreground">{formatLTV(pool.liquidationThreshold)}</div>
+                <div className="text-xs text-foreground-muted mt-1">When liquidation starts</div>
+              </div>
+              <div className="p-4 rounded-xl bg-background-surface">
+                <div className="text-sm text-foreground-muted mb-1">Liquidation Bonus</div>
+                <div className="text-xl font-bold text-foreground">{(pool.liquidationBonus / 100).toFixed(0)}%</div>
+                <div className="text-xs text-foreground-muted mt-1">Bonus for liquidators</div>
+              </div>
             </div>
-            <div className="p-4 rounded-xl bg-background-surface">
-              <div className="text-sm text-foreground-muted mb-1">Liquidation Threshold</div>
-              <div className="text-xl font-bold text-foreground">{formatLTV(pool.liquidationThreshold)}</div>
-              <div className="text-xs text-foreground-muted mt-1">When liquidation starts</div>
-            </div>
-            <div className="p-4 rounded-xl bg-background-surface">
-              <div className="text-sm text-foreground-muted mb-1">Liquidation Bonus</div>
-              <div className="text-xl font-bold text-foreground">{(pool.liquidationBonus / 100).toFixed(0)}%</div>
-              <div className="text-xs text-foreground-muted mt-1">Bonus for liquidators</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+      </section>
+    </article>
   );
 }

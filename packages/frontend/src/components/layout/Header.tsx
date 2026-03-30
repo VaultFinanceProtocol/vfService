@@ -35,14 +35,14 @@ export function Header() {
                 VF
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-base font-bold tracking-tight text-foreground">
+                <span className="text-base font-bold tracking-tight text-foreground">
                   VaultFinance
-                </h1>
+                </span>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-1">
+            <nav aria-label="Primary" className="hidden lg:flex items-center gap-1">
               {navItems.map((item) => {
                 const active = isActive(item.path);
                 return (
@@ -87,7 +87,7 @@ export function Header() {
             mobileMenuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
           )}
         >
-          <nav className="px-4 py-3 space-y-1">
+          <nav aria-label="Mobile" className="px-4 py-3 space-y-1">
             {navItems.map((item) => {
               const active = isActive(item.path);
               return (
@@ -111,7 +111,7 @@ export function Header() {
       </header>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background-page/95 backdrop-blur-md pb-safe">
+      <nav aria-label="Bottom" className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background-page/95 backdrop-blur-md pb-safe">
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map((item) => {
             const active = isActive(item.path);

@@ -4,10 +4,64 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VaultFinance - Lending Protocol</title>
+    <meta
+      name="description"
+      content="Track VaultFinance lending markets, compare supply and borrow rates, review liquidity, and inspect collateral risk parameters."
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="VaultFinance Lending Markets" />
+    <meta
+      property="og:description"
+      content="Explore VaultFinance lending markets with live rates, liquidity metrics, and collateral controls."
+    />
+    <meta property="og:site_name" content="VaultFinance" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VaultFinance Lending Markets" />
+    <meta
+      name="twitter:description"
+      content="Explore VaultFinance lending markets with live rates, liquidity metrics, and collateral controls."
+    />
+    <meta name="theme-color" content="#0f172a" />
+    <title>VaultFinance Lending Markets</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main style="font-family: Inter, system-ui, sans-serif; max-width: 960px; margin: 0 auto; padding: 32px 20px; color: #0f172a;">
+        <header>
+          <p style="margin: 0 0 12px; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #475569;">
+            VaultFinance
+          </p>
+          <h1 style="margin: 0 0 16px; font-size: 40px; line-height: 1.1;">
+            Lending markets, rates, and collateral risk in one dashboard
+          </h1>
+          <p style="margin: 0 0 20px; font-size: 18px; line-height: 1.6; color: #334155;">
+            VaultFinance helps borrowers and suppliers compare market liquidity, review APY, and inspect liquidation thresholds across supported assets.
+          </p>
+          <nav aria-label="Primary">
+            <a href="/markets" style="color: #2563eb; font-weight: 600;">Browse markets</a>
+          </nav>
+        </header>
+        <section style="margin-top: 32px;">
+          <h2 style="margin: 0 0 12px; font-size: 24px;">Supported assets</h2>
+          <p style="margin: 0; color: #475569;">
+            Market coverage includes ETH, WETH, USDC, USDT, and DAI with transparent supply rates, borrow rates, liquidity, and collateral parameters.
+          </p>
+        </section>
+        <section style="margin-top: 24px;">
+          <h2 style="margin: 0 0 12px; font-size: 24px;">Protocol overview</h2>
+          <p style="margin: 0; color: #475569;">
+            Use the interactive app to supply assets, borrow against collateral, monitor risk, and inspect protocol-wide totals such as TVL and outstanding debt.
+          </p>
+        </section>
+      </main>
+    </div>
+    <noscript>
+      VaultFinance requires JavaScript for live wallet actions, but market coverage and protocol details are available on the Markets page.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

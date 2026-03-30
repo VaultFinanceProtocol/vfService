@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/Card";
 import { Button } from "@components/ui/Button";
 import { Input } from "@components/ui/Input";
@@ -10,6 +11,8 @@ import { X, TrendingUp } from "lucide-react";
 import { AssetIcon } from "@components/protocol/asset-icon";
 import { APYBadge } from "@components/protocol/apy-badge";
 import { StatCard } from "@components/protocol/stat-card";
+import { Seo } from "@components/seo/Seo";
+import { buildAbsoluteUrl } from "@lib/site";
 
 const ASSET_PRICES: Record<string, number> = {
   '0000000000000000000000000000000000000000000000000000000000000000': 3500,
@@ -265,7 +268,7 @@ function OperationModal({ isOpen, onClose, pool, operation }: any) {
 
 export function MarketsPage() {
   const { pools: fetchedPools, isLoading } = usePools(0, 100);
-  const { stats, isLoading: statsLoading } = useProtocolStats();
+  const { stats } = useProtocolStats();
   const pools = fetchedPools.length > 0 ? fetchedPools : MOCK_ASSETS;
   const isPageLoading = isLoading && fetchedPools.length === 0;
 
@@ -279,88 +282,144 @@ export function MarketsPage() {
     setModalOpen(true);
   };
 
+  const structuredData = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'VaultFinance Markets',
+      description:
+        'Browse VaultFinance lending markets with live supply APY, borrow APY, liquidity, and protocol-wide totals.',
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: pools.slice(0, 10).map((pool, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: `${pool.symbol} lending market`,
+          url: buildAbsoluteUrl(`/markets/${pool.asset}`) || `/markets/${pool.asset}`,
+        })),
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Markets',
+          item: buildAbsoluteUrl('/markets') || '/markets',
+        },
+      ],
+    },
+  ];
+
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Page Header */}
-      <div>
+    <article className="space-y-8 animate-fade-in">
+      <Seo
+        title="Markets"
+        description="Browse VaultFinance lending markets, compare supply and borrow APY, inspect liquidity, and review protocol totals."
+        path="/markets"
+        structuredData={structuredData}
+      />
+      <header>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Markets</h1>
-        <p className="text-foreground-muted mt-1">Browse all available lending markets and earn yields</p>
-      </div>
+        <p className="text-foreground-muted mt-1">
+          Browse lending markets, compare rates, and inspect liquidity before supplying or borrowing.
+        </p>
+      </header>
 
-      {/* Protocol Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Value Locked" value={isPageLoading ? "..." : formatUSD(stats?.totalValueLocked)} subtitle="Protocol TVL" />
-        <StatCard title="Total Supplied" value={isPageLoading ? "..." : formatUSD(stats?.totalSupplied)} subtitle="Across all pools" trend="up" trendValue="12%" />
-        <StatCard title="Total Borrowed" value={isPageLoading ? "..." : formatUSD(stats?.totalBorrowed)} subtitle="Active loans" />
-        <StatCard title="Active Pools" value={isPageLoading ? "..." : pools.length} subtitle="Available markets" />
-      </div>
+      <section aria-labelledby="protocol-stats-heading" className="space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <h2 id="protocol-stats-heading" className="text-xl font-semibold text-foreground">
+            Protocol overview
+          </h2>
+          <p className="text-sm text-foreground-muted">
+            Market-wide totals update from the protocol API.
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard title="Total Value Locked" value={isPageLoading ? "..." : formatUSD(stats?.totalValueLocked)} subtitle="Protocol TVL" />
+          <StatCard title="Total Supplied" value={isPageLoading ? "..." : formatUSD(stats?.totalSupplied)} subtitle="Across all pools" trend="up" trendValue="12%" />
+          <StatCard title="Total Borrowed" value={isPageLoading ? "..." : formatUSD(stats?.totalBorrowed)} subtitle="Active loans" />
+          <StatCard title="Active Pools" value={isPageLoading ? "..." : pools.length} subtitle="Available markets" />
+        </div>
+      </section>
 
-      {/* Markets Table */}
-      <Card className="overflow-hidden">
-        <CardHeader className="border-b border-border">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">All Markets</CardTitle>
-            <div className="text-sm text-foreground-muted">{pools.length} assets available</div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">Asset</th>
-                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden sm:table-cell">Total Supplied</th>
-                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">Supply APY</th>
-                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden md:table-cell">Borrow APY</th>
-                  <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden lg:table-cell">Liquidity</th>
-                  <th className="text-center py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pools.map((pool, index) => {
-                  const price = ASSET_PRICES[pool.asset] || 0;
-                  const suppliedUSD = (parseFloat(pool.totalSupplied) / 10 ** pool.decimals) * price;
-                  const liquidityUSD = (parseFloat(pool.liquidity) / 10 ** pool.decimals) * price;
-                  return (
-                    <tr key={pool.asset} className="group border-b border-border transition-colors hover:bg-background-hover">
-                      <td className="py-4 px-4 sm:px-6">
-                        <div className="flex items-center gap-3">
-                          <AssetIcon symbol={pool.symbol} className="w-10 h-10 text-sm flex-shrink-0" />
-                          <div>
-                            <div className="font-semibold text-foreground">{pool.symbol}</div>
-                            <div className="text-sm text-foreground-muted hidden sm:block">{pool.name}</div>
+      <section aria-labelledby="all-markets-heading">
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b border-border">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg" id="all-markets-heading">All Markets</CardTitle>
+              <div className="text-sm text-foreground-muted">{pools.length} assets available</div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <caption className="sr-only">
+                  VaultFinance markets with asset names, supplied value, rates, and available liquidity.
+                </caption>
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">Asset</th>
+                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden sm:table-cell">Total Supplied</th>
+                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">Supply APY</th>
+                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden md:table-cell">Borrow APY</th>
+                    <th className="text-right py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted hidden lg:table-cell">Liquidity</th>
+                    <th className="text-center py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider text-foreground-muted">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pools.map((pool) => {
+                    const price = ASSET_PRICES[pool.asset] || 0;
+                    const suppliedUSD = (parseFloat(pool.totalSupplied) / 10 ** pool.decimals) * price;
+                    const liquidityUSD = (parseFloat(pool.liquidity) / 10 ** pool.decimals) * price;
+                    return (
+                      <tr key={pool.asset} className="group border-b border-border transition-colors hover:bg-background-hover">
+                        <td className="py-4 px-4 sm:px-6">
+                          <div className="flex items-center gap-3">
+                            <AssetIcon symbol={pool.symbol} className="w-10 h-10 text-sm flex-shrink-0" />
+                            <div>
+                              <Link
+                                to={`/markets/${pool.asset}`}
+                                className="font-semibold text-foreground hover:text-brand transition-colors"
+                              >
+                                {pool.symbol}
+                              </Link>
+                              <div className="text-sm text-foreground-muted hidden sm:block">{pool.name}</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="text-right py-4 px-4 sm:px-6 hidden sm:table-cell">
-                        <div className="font-medium text-foreground">{formatUSD(suppliedUSD)}</div>
-                      </td>
-                      <td className="text-right py-4 px-4 sm:px-6">
-                        <APYBadge value={parseFloat(pool.supplyAPY)} type="supply" size="sm" />
-                      </td>
-                      <td className="text-right py-4 px-4 sm:px-6 hidden md:table-cell">
-                        <APYBadge value={parseFloat(pool.borrowAPY)} type="borrow" size="sm" />
-                      </td>
-                      <td className="text-right py-4 px-4 sm:px-6 hidden lg:table-cell">
-                        <div className="font-medium text-foreground">{formatUSD(liquidityUSD)}</div>
-                      </td>
-                      <td className="text-center py-4 px-4 sm:px-6">
-                        <div className="flex items-center justify-center gap-2">
-                          <Button size="sm" variant="buy" className="rounded-lg font-medium" onClick={() => openModal(pool, 'supply')}>Supply</Button>
-                          <Button size="sm" variant="outline" className="rounded-lg font-medium" onClick={() => openModal(pool, 'borrow')}>Borrow</Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                        </td>
+                        <td className="text-right py-4 px-4 sm:px-6 hidden sm:table-cell">
+                          <div className="font-medium text-foreground">{formatUSD(suppliedUSD)}</div>
+                        </td>
+                        <td className="text-right py-4 px-4 sm:px-6">
+                          <APYBadge value={parseFloat(pool.supplyAPY)} type="supply" size="sm" />
+                        </td>
+                        <td className="text-right py-4 px-4 sm:px-6 hidden md:table-cell">
+                          <APYBadge value={parseFloat(pool.borrowAPY)} type="borrow" size="sm" />
+                        </td>
+                        <td className="text-right py-4 px-4 sm:px-6 hidden lg:table-cell">
+                          <div className="font-medium text-foreground">{formatUSD(liquidityUSD)}</div>
+                        </td>
+                        <td className="text-center py-4 px-4 sm:px-6">
+                          <div className="flex items-center justify-center gap-2">
+                            <Button size="sm" variant="buy" className="rounded-lg font-medium" onClick={() => openModal(pool, 'supply')}>Supply</Button>
+                            <Button size="sm" variant="outline" className="rounded-lg font-medium" onClick={() => openModal(pool, 'borrow')}>Borrow</Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
 
       {/* Operation Modal */}
       <OperationModal isOpen={modalOpen} onClose={() => setModalOpen(false)} pool={selectedPool} operation={operation} />
-    </div>
+    </article>
   );
 }

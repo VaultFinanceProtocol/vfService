@@ -30,6 +30,7 @@ const MOCK_ASSETS = [
     liquidity: '950000000000000000000',
     supplyAPY: '0.0319',
     borrowAPY: '0.0528',
+    liquidationThreshold: 80,
     canCollateral: true,
   },
   {
@@ -42,6 +43,7 @@ const MOCK_ASSETS = [
     liquidity: '3800000000000',
     supplyAPY: '0.0245',
     borrowAPY: '0.0472',
+    liquidationThreshold: 85,
     canCollateral: true,
   },
   {
@@ -54,6 +56,7 @@ const MOCK_ASSETS = [
     liquidity: '2900000000000',
     supplyAPY: '0.0267',
     borrowAPY: '0.0512',
+    liquidationThreshold: 0,
     canCollateral: false,
   },
   {
@@ -66,6 +69,7 @@ const MOCK_ASSETS = [
     liquidity: '1750000000000000000000000',
     supplyAPY: '0.0218',
     borrowAPY: '0.0435',
+    liquidationThreshold: 82,
     canCollateral: true,
   },
   {
@@ -78,6 +82,7 @@ const MOCK_ASSETS = [
     liquidity: '720000000000000000000',
     supplyAPY: '0.0302',
     borrowAPY: '0.0498',
+    liquidationThreshold: 80,
     canCollateral: true,
   },
 ];

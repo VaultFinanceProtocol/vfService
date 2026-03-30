@@ -19,6 +19,7 @@ import { useLiquidations, useLiquidationPreview } from "@hooks/useLiquidations";
 import { formatUSD, formatAmount } from "@utils/format";
 import type { LiquidatablePosition } from "@app-types";
 import { cn } from "@lib/utils";
+import { Seo } from "@components/seo/Seo";
 
 // Stat Card Component
 function StatCard({ 
@@ -112,9 +113,14 @@ export function LiquidationsPage() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <article className="space-y-8 animate-fade-in">
+      <Seo
+        title="Liquidations"
+        description="VaultFinance liquidation dashboard for monitoring liquidatable positions and execution opportunities."
+        path="/liquidations"
+        noindex
+      />
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             Liquidations
@@ -130,10 +136,14 @@ export function LiquidationsPage() {
           <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           Refresh
         </Button>
-      </div>
+      </header>
 
       {/* Info Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <section aria-labelledby="liquidation-overview-heading" className="space-y-4">
+        <h2 id="liquidation-overview-heading" className="sr-only">
+          Liquidation overview
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
           title="Positions at Risk"
           value={positions?.filter((p) => parseFloat(p.healthFactor) < 0.9).length || 0}
@@ -159,12 +169,14 @@ export function LiquidationsPage() {
           color="success"
           delay={100}
         />
-      </div>
+        </div>
+      </section>
 
       {/* Liquidations List */}
+      <section aria-labelledby="liquidations-list-heading">
       <Card className="overflow-hidden">
         <CardHeader className="border-b border-border">
-          <CardTitle className="text-lg">Available Liquidations</CardTitle>
+          <CardTitle className="text-lg" id="liquidations-list-heading">Available Liquidations</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
@@ -225,6 +237,7 @@ export function LiquidationsPage() {
           )}
         </CardContent>
       </Card>
+      </section>
 
       {/* Liquidation Modal */}
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
@@ -371,6 +384,6 @@ export function LiquidationsPage() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </article>
   );
 }

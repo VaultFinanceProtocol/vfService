@@ -18,6 +18,7 @@ import { useHistory } from "@hooks/useHistory";
 import { OperationStatus, OperationType } from "@app-types";
 import { formatAmount } from "@utils/format";
 import { cn } from "@lib/utils";
+import { Seo } from "@components/seo/Seo";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";
 
@@ -83,9 +84,14 @@ export function HistoryPage() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <article className="space-y-8 animate-fade-in">
+      <Seo
+        title="History"
+        description="VaultFinance transaction history page showing user-specific operation records."
+        path="/history"
+        noindex
+      />
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             History
@@ -101,11 +107,15 @@ export function HistoryPage() {
           <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           Refresh
         </Button>
-      </div>
+      </header>
 
       {/* Filters */}
+      <section aria-labelledby="history-filters-heading">
       <Card>
         <CardContent className="pt-6">
+          <h2 id="history-filters-heading" className="sr-only">
+            History filters
+          </h2>
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-foreground-muted">Status:</span>
@@ -129,11 +139,13 @@ export function HistoryPage() {
           </div>
         </CardContent>
       </Card>
+      </section>
 
       {/* History List */}
+      <section aria-labelledby="history-list-heading">
       <Card className="overflow-hidden">
         <CardHeader className="border-b border-border">
-          <CardTitle className="text-lg">Transaction History</CardTitle>
+          <CardTitle className="text-lg" id="history-list-heading">Transaction History</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
@@ -223,6 +235,7 @@ export function HistoryPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </section>
+    </article>
   );
 }

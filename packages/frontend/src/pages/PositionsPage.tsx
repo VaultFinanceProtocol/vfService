@@ -9,6 +9,7 @@ import { OperationModal } from "@components/operations/OperationModal";
 import { useWallet } from "@contexts/wallet-context";
 import type { UserPosition } from "@app-types";
 import { cn } from "@lib/utils";
+import { Seo } from "@components/seo/Seo";
 
 const MOCK_USER = "user1234567890abcdef1234567890abcdef123456";
 
@@ -65,18 +66,27 @@ export function PositionsPage() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Page Header */}
-      <div>
+    <article className="space-y-6 animate-fade-in">
+      <Seo
+        title="Positions"
+        description="VaultFinance user positions page for managing supplied collateral, borrows, and health factor."
+        path="/positions"
+        noindex
+      />
+      <header>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
           My Positions
         </h1>
         <p className="text-foreground-secondary mt-1">Manage your supplies and borrows</p>
-      </div>
+      </header>
 
       {/* Health Factor Summary */}
+      <section aria-labelledby="health-factor-heading">
       <Card>
         <CardContent className="p-4 sm:p-6">
+          <h2 id="health-factor-heading" className="sr-only">
+            Health factor summary
+          </h2>
           {isLoading ? (
             <div className="flex items-center justify-center py-4">
               <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
@@ -128,8 +138,13 @@ export function PositionsPage() {
           )}
         </CardContent>
       </Card>
+      </section>
 
       {/* Supplies & Borrows */}
+      <section aria-labelledby="positions-tabs-heading">
+      <h2 id="positions-tabs-heading" className="sr-only">
+        Supplied and borrowed assets
+      </h2>
       <Tabs defaultValue="supplies" className="w-full">
         <TabsList className="grid w-full grid-cols-2 h-12">
           <TabsTrigger value="supplies">Supplied Assets</TabsTrigger>
@@ -251,6 +266,7 @@ export function PositionsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      </section>
 
       {/* Operation Modal */}
       <OperationModal
@@ -261,6 +277,6 @@ export function PositionsPage() {
         userAddr={userAddr}
         onSuccess={handleOperationSuccess}
       />
-    </div>
+    </article>
   );
 }
